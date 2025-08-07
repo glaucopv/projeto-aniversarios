@@ -173,7 +173,7 @@
       {
         nome: 'Eduardo Jorge Vieira',
         data: '2012-04-11',
-        foto: 'fotos/eduardojorge.jpg',
+        foto: 'fotos/eduardojorge.jpeg',
         preferencias: 'Música clássica, Romances, Vôlei',
         presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
       },
@@ -216,7 +216,7 @@
       {
         nome: 'Pedro Eduardo Vieira',
         data: '2020-03-03',
-        foto: 'fotos/pedro.jpeg',
+        foto: 'fotos/pedroeduardo.jpeg',
         preferencias: 'Música clássica, Romances, Vôlei',
         presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
       },
@@ -289,20 +289,31 @@
 
     function mostrarProximoAniversario() {
       const hoje = new Date();
-      const hojeMes = hoje.getMonth();
-      const hojeDia = hoje.getDate();
 
       const proximo = membrosDaFamilia
-        .map(m => ({ ...m, date: new Date(m.data) }))
-        .filter(m => m.date.getMonth() > hojeMes || (m.date.getMonth() === hojeMes && m.date.getDate() >= hojeDia))
-        .sort((a, b) => new Date(a.data) - new Date(b.data))[0];
+        .map(m => {
+          const aniversario = new Date(m.data);
+          aniversario.setFullYear(hoje.getFullYear());
+
+          // Se já passou neste ano, joga para o próximo
+          if (
+            aniversario.getMonth() < hoje.getMonth() ||
+            (aniversario.getMonth() === hoje.getMonth() && aniversario.getDate() < hoje.getDate())
+          ) {
+            aniversario.setFullYear(hoje.getFullYear() + 1);
+          }
+
+          return { ...m, date: aniversario };
+        })
+        .sort((a, b) => a.date - b.date)[0];
 
       if (proximo) {
         exibirMembros([proximo]);
       } else {
-        alert("Nenhum próximo aniversário este ano!");
+        alert("Nenhum próximo aniversário encontrado!");
       }
     }
+    
 
     function adicionarMembro(event) {
       event.preventDefault();

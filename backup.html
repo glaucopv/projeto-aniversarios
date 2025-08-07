@@ -45,3 +45,19 @@
       exibirMembros();
       event.target.reset();
     }
+    function mostrarProximoAniversario() {
+      const hoje = new Date();
+      const hojeMes = hoje.getMonth();
+      const hojeDia = hoje.getDate();
+
+      const proximo = membrosDaFamilia
+        .map(m => ({ ...m, date: new Date(m.data) }))
+        .filter(m => m.date.getMonth() > hojeMes || (m.date.getMonth() === hojeMes && m.date.getDate() >= hojeDia))
+        .sort((a, b) => new Date(a.data) - new Date(b.data))[0];
+
+      if (proximo) {
+        exibirMembros([proximo]);
+      } else {
+        alert("Nenhum próximo aniversário este ano!");
+      }
+    }
