@@ -61,3 +61,24 @@
         alert("Nenhum próximo aniversário este ano!");
       }
     }
+        // function criarCard(membro) {
+    //   const hoje = new Date();
+    //   const [ano, mes, dia] = membro.data.split('-').map(Number);
+    //   const dataNasc = new Date(ano, mes - 1, dia);
+
+    //   const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+
+    //   return `
+    //     <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
+    //       <img src="${membro.foto}" alt="Foto de ${membro.nome}">
+    //       <div class="name">${membro.nome}</div>
+    //       <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
+    //       ${membro.preferencias ? `<p><strong>Preferências:</strong><br>${membro.preferencias}</p>` : ''}
+    //       ${membro.presentes ? `
+    //         <p><strong>Quer ganhar:</strong><br>
+    //         <ul style="text-align: left; padding-left: 20px;">
+    //           ${membro.presentes.map(p => `<li>${p}</li>`).join('')}
+    //         </ul></p>` : ''}
+    //     </div>
+    //   `;
+    // } 
