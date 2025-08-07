@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aniversários da Família</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { text-align: center; color: #333; }
+    .controls, .form-container { text-align: center; margin-top: 20px; }
+    .controls button {
+      margin: 5px; padding: 10px 15px; border: none;
+      background-color: #4CAF50; color: white;
+      border-radius: 8px; cursor: pointer;
+    }
+    .controls input {
+      padding: 10px; font-size: 16px; width: 300px;
+      max-width: 90%; border: 1px solid #ccc; border-radius: 8px;
+    }
+    .container {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 20px; margin-top: 30px;
+    }
+    .card {
+      background-color: #fff; border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 240px; text-align: center; padding: 15px;
+    }
+    .card img {
+      width: 100%; height: 230px; object-fit: cover;
+      border-radius: 8px;
+    }
+    .card .name { font-size: 18px; margin: 12px 0 6px; font-weight: bold; }
+    .card .birthday { font-size: 16px; color: #777; }
+    .highlight {
+      border: 2px solid #ff9800;
+      box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+    }
+    form input { padding: 8px; margin: 5px; border-radius: 6px; border: 1px solid #ccc; }
+    form button { padding: 8px 12px; background-color: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .edit-btn {
+      background-color: #ff9800; color: white; border: none;
+      padding: 6px 10px; border-radius: 6px; cursor: pointer; margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Aniversários da Família 🎉</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Buscar por nome..." oninput="filtrarMembros()" />
+    <br>
+    <button onclick="ordenarPorMes()">Ordenar por mês</button>
+    <button onclick="mostrarProximoAniversario()">Próximo Aniversário</button>
+  </div>
+
+  <div class="container" id="cardsContainer"></div>
+
+  <div class="form-container">
+    <h2>Adicionar Novo Membro 👨‍👩‍👧</h2>
+    <form onsubmit="adicionarMembro(event)">
+      <input type="text" id="nome" placeholder="Nome completo" required />
+      <input type="date" id="data" required />
+      <input type="url" id="foto" placeholder="URL da foto" required />
+      <input type="text" id="preferencias" placeholder="Preferências" />
+      <input type="text" id="presente1" placeholder="Presente 1" />
+      <input type="text" id="presente2" placeholder="Presente 2" />
+      <input type="text" id="presente3" placeholder="Presente 3" />
+      <button type="submit">Adicionar</button>
+    </form>
+  </div>
+
+  <!-- Modal para edição -->
+  <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+       background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+    <div style="background:white; padding:20px; border-radius:10px; width:300px;">
+      <h3>Editar Preferências</h3>
+      <form id="editForm">
+        <input type="text" id="editPreferencias" placeholder="Preferências" />
+        <input type="text" id="editPresente1" placeholder="Presente 1" />
+        <input type="text" id="editPresente2" placeholder="Presente 2" />
+        <input type="text" id="editPresente3" placeholder="Presente 3" />
+        <br><br>
+        <button type="submit">Salvar</button>
+        <button type="button" onclick="fecharModal()">Cancelar</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const LOCAL_KEY = 'familiaAniversarios';
+    let membrosDaFamilia = JSON.parse(localStorage.getItem(LOCAL_KEY)) || [
+      { nome: 'Clarisse Vieira', data: '2004-11-04', foto: 'fotos/clarisse.jpeg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] }
+    ];
+    let indiceEditando = null;
+
+    function salvarNoLocalStorage() {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(membrosDaFamilia));
+    }
+
+    function criarCard(membro, index) {
+      const hoje = new Date();
+      const [ano, mes, dia] = membro.data.split('-').map(Number);
+      const dataNasc = new Date(ano, mes - 1, dia);
+      const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+
+      return `
+        <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
+          <img src="${membro.foto}" alt="Foto de ${membro.nome}">
+          <div class="name">${membro.nome}</div>
+          <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
+          ${membro.preferencias ? `<p><strong>Preferências:</strong><br>${membro.preferencias}</p>` : ''}
+          ${membro.presentes && membro.presentes.length ? `
+            <p><strong>Quer ganhar:</strong><br>
+            <ul style="text-align: left; padding-left: 20px;">
+              ${membro.presentes.map(p => `<li>${p}</li>`).join('')}
+            </ul></p>` : ''}
+          <button class="edit-btn" onclick="abrirModal(${index})">Editar</button>
+        </div>
+      `;
+    }
+
+    function exibirMembros(lista = membrosDaFamilia) {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = lista.map((m, i) => criarCard(m, i)).join('');
+    }
+
+    function filtrarMembros() {
+      const filtro = document.getElementById('searchInput').value.toLowerCase();
+      const filtrados = membrosDaFamilia.filter(m => m.nome.toLowerCase().includes(filtro));
+      exibirMembros(filtrados);
+    }
+
+    function ordenarPorMes() {
+      membrosDaFamilia.sort((a, b) => {
+        const mesA = new Date(a.data).getMonth();
+        const mesB = new Date(b.data).getMonth();
+        return mesA - mesB;
+      });
+      exibirMembros();
+    }
+
+    function mostrarProximoAniversario() {
+      const hoje = new Date();
+      const hojeMes = hoje.getMonth();
+      const hojeDia = hoje.getDate();
+
+      const proximo = membrosDaFamilia
+        .map(m => ({ ...m, date: new Date(m.data) }))
+        .filter(m => m.date.getMonth() > hojeMes || (m.date.getMonth() === hojeMes && m.date.getDate() >= hojeDia))
+        .sort((a, b) => new Date(a.data) - new Date(b.data))[0];
+
+      if (proximo) {
+        exibirMembros([proximo]);
+      } else {
+        alert("Nenhum próximo aniversário este ano!");
+      }
+    }
+
+    function adicionarMembro(event) {
+      event.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const data = document.getElementById('data').value;
+      const foto = document.getElementById('foto').value.trim();
+      const preferencias = document.getElementById('preferencias').value.trim();
+      const presentes = [
+        document.getElementById('presente1').value.trim(),
+        document.getElementById('presente2').value.trim(),
+        document.getElementById('presente3').value.trim()
+      ].filter(p => p);
+
+      membrosDaFamilia.push({ nome, data, foto, preferencias, presentes });
+      salvarNoLocalStorage();
+      exibirMembros();
+      event.target.reset();
+    }
+
+    function abrirModal(index) {
+      indiceEditando = index;
+      const membro = membrosDaFamilia[index];
+      document.getElementById('editPreferencias').value = membro.preferencias || '';
+      document.getElementById('editPresente1').value = membro.presentes?.[0] || '';
+      document.getElementById('editPresente2').value = membro.presentes?.[1] || '';
+      document.getElementById('editPresente3').value = membro.presentes?.[2] || '';
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function fecharModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (indiceEditando !== null) {
+        membrosDaFamilia[indiceEditando].preferencias = document.getElementById('editPreferencias').value.trim();
+        membrosDaFamilia[indiceEditando].presentes = [
+          document.getElementById('editPresente1').value.trim(),
+          document.getElementById('editPresente2').value.trim(),
+          document.getElementById('editPresente3').value.trim()
+        ].filter(p => p);
+        salvarNoLocalStorage();
+        exibirMembros();
+        fecharModal();
+      }
+    });
+
+    exibirMembros();
+  </script>
+</body>
+</html>
