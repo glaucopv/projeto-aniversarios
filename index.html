@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aniversários da Família</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .controls, .form-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .controls button {
+      margin: 5px;
+      padding: 10px 15px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .controls input {
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+      max-width: 90%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 220px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .card .name {
+      font-size: 18px;
+      margin: 12px 0 6px;
+      font-weight: bold;
+    }
+
+    .card .birthday {
+      font-size: 16px;
+      color: #777;
+    }
+
+    .highlight {
+      border: 2px solid #ff9800;
+      box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+    }
+
+    .form-container {
+      margin-top: 30px;
+    }
+
+    form input {
+      padding: 8px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    form button {
+      padding: 8px 12px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        width: 90%;
+      }
+
+      .controls input {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Aniversários da Família 🎉</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Buscar por nome..." oninput="filtrarMembros()" />
+    <br>
+    <button onclick="ordenarPorMes()">Ordenar por mês</button>
+    <button onclick="mostrarProximoAniversario()">Próximo Aniversário</button>
+  </div>
+
+  <div class="container" id="cardsContainer">
+    <!-- Cards gerados pelo JS -->
+  </div>
+
+  <div class="form-container">
+    <h2>Adicionar Novo Membro 👨‍👩‍👧</h2>
+    <form onsubmit="adicionarMembro(event)">
+      <input type="text" id="nome" placeholder="Nome completo" required />
+      <input type="date" id="data" required />
+      <input type="url" id="foto" placeholder="URL da foto (ou local)" required />
+      <button type="submit">Adicionar</button>
+    </form>
+  </div>
+
+  <script>
+    // Salva e carrega dados do localStorage
+    const LOCAL_KEY = 'familiaAniversarios';
+    let membrosDaFamilia = JSON.parse(localStorage.getItem(LOCAL_KEY)) || [
+      { nome: 'Clarisse Vieira', data: '2004-11-04', foto: 'fotos/clarisse.jpeg' },
+      { nome: 'Andrew Gabriel Vieira', data: '2006-05-31', foto: 'fotos/gabriel.jpg' },
+      { nome: 'Gabriele Vieira', data: '2009-06-08', foto: 'fotos/gabriele.jpg' },
+      { nome: 'Ryan Lucas Vieira', data: '2010-08-16', foto: 'fotos/ryan.jpg' },
+      { nome: 'Eduardo Jorge Vieira', data: '2012-04-11', foto: 'fotos/eduardojorge.jpg' },
+      { nome: 'Miguel Angelo Vieira', data: '2014-02-19', foto: 'fotos/miguelangelo.jpeg' },
+      { nome: 'Amarillis Vieira', data: '2014-05-04', foto: 'fotos/amarillis.jpg' },
+      { nome: 'Júlia Vieira', data: '2015-09-11', foto: 'fotos/julia.jpg' },
+      { nome: 'Antonella Vieira', data: '2017-10-08', foto: 'fotos/antonella.jpg' },
+      { nome: 'Alice Vieira', data: '2018-04-21', foto: 'fotos/alice.jpg' },
+      { nome: 'Pedro Eduardo Vieira', data: '2020-03-03', foto: 'fotos/pedro.jpg' },
+      { nome: 'Ravi Vieira', data: '2020-09-14', foto: 'fotos/ravi.jpg' },
+      { nome: 'Francisco Daniel Vieira', data: '2023-02-17', foto: 'fotos/lorenzo.jpg' },
+    ];
+
+    function salvarNoLocalStorage() {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(membrosDaFamilia));
+    }
+
+    function criarCard(membro) {
+        const hoje = new Date();
+        const [ano, mes, dia] = membro.data.split('-').map(Number);
+        const dataNasc = new Date(ano, mes - 1, dia);
+
+        const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+
+        return `
+            <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
+            <img src="${membro.foto}" alt="Foto de ${membro.nome}">
+            <div class="name">${membro.nome}</div>
+            <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
+            </div>
+        `;
+        }
+
+
+    // function criarCard(membro) {
+    //   const hoje = new Date();
+    //   const dataNasc = new Date(membro.data);
+    //   const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+
+    //   return `
+    //     <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
+    //       <img src="${membro.foto}" alt="Foto de ${membro.nome}">
+    //       <div class="name">${membro.nome}</div>
+    //       <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
+    //     </div>
+    //   `;
+    // }
+
+    function exibirMembros(lista = membrosDaFamilia) {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+      lista.forEach(m => {
+        container.innerHTML += criarCard(m);
+      });
+    }
+
+    function filtrarMembros() {
+      const filtro = document.getElementById('searchInput').value.toLowerCase();
+      const filtrados = membrosDaFamilia.filter(m => m.nome.toLowerCase().includes(filtro));
+      exibirMembros(filtrados);
+    }
+
+    function ordenarPorMes() {
+      membrosDaFamilia.sort((a, b) => {
+        const mesA = new Date(a.data).getMonth();
+        const mesB = new Date(b.data).getMonth();
+        return mesA - mesB;
+      });
+      exibirMembros();
+    }
+
+    function mostrarProximoAniversario() {
+      const hoje = new Date();
+      const hojeMes = hoje.getMonth();
+      const hojeDia = hoje.getDate();
+
+      const proximo = membrosDaFamilia
+        .map(m => ({ ...m, date: new Date(m.data) }))
+        .filter(m => m.date.getMonth() > hojeMes || (m.date.getMonth() === hojeMes && m.date.getDate() >= hojeDia))
+        .sort((a, b) => new Date(a.data) - new Date(b.data))[0];
+
+      if (proximo) {
+        exibirMembros([proximo]);
+      } else {
+        alert("Nenhum próximo aniversário este ano!");
+      }
+    }
+
+    function adicionarMembro(event) {
+      event.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const data = document.getElementById('data').value;
+      const foto = document.getElementById('foto').value.trim();
+
+      if (!nome || !data || !foto) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      membrosDaFamilia.push({ nome, data, foto });
+      salvarNoLocalStorage();
+      exibirMembros();
+      event.target.reset();
+    }
+
+    // Inicialização
+    exibirMembros();
+  </script>
+</body>
+</html>
