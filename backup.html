@@ -1,0 +1,47 @@
+  // function criarCard(membro) {
+    //     const hoje = new Date();
+    //     const [ano, mes, dia] = membro.data.split('-').map(Number);
+    //     const dataNasc = new Date(ano, mes - 1, dia);
+
+    //     const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+
+    //     return `
+    //         <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
+    //         <img src="${membro.foto}" alt="Foto de ${membro.nome}">
+    //         <div class="name">${membro.nome}</div>
+    //         <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
+    //         </div>
+    //     `;
+    //     }
+
+
+    // function criarCard(membro) {
+    //   const hoje = new Date();
+    //   const dataNasc = new Date(membro.data);
+    //   const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+
+    //   return `
+    //     <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
+    //       <img src="${membro.foto}" alt="Foto de ${membro.nome}">
+    //       <div class="name">${membro.nome}</div>
+    //       <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
+    //     </div>
+    //   `;
+    // }
+
+      function adicionarMembro(event) {
+      event.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const data = document.getElementById('data').value;
+      const foto = document.getElementById('foto').value.trim();
+
+      if (!nome || !data || !foto) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      membrosDaFamilia.push({ nome, data, foto });
+      salvarNoLocalStorage();
+      exibirMembros();
+      event.target.reset();
+    }

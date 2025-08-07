@@ -60,7 +60,7 @@
 
     .card img {
       width: 100%;
-      height: 200px;
+      height: 230px;
       object-fit: cover;
       border-radius: 8px;
     }
@@ -140,55 +140,127 @@
     // Salva e carrega dados do localStorage
     const LOCAL_KEY = 'familiaAniversarios';
     let membrosDaFamilia = JSON.parse(localStorage.getItem(LOCAL_KEY)) || [
-      { nome: 'Clarisse Vieira', data: '2004-11-04', foto: 'fotos/clarisse.jpeg' },
-      { nome: 'Andrew Gabriel Vieira', data: '2006-05-31', foto: 'fotos/gabriel.jpg' },
-      { nome: 'Gabriele Vieira', data: '2009-06-08', foto: 'fotos/gabriele.jpg' },
-      { nome: 'Ryan Lucas Vieira', data: '2010-08-16', foto: 'fotos/ryan.jpg' },
-      { nome: 'Eduardo Jorge Vieira', data: '2012-04-11', foto: 'fotos/eduardojorge.jpg' },
-      { nome: 'Miguel Angelo Vieira', data: '2014-02-19', foto: 'fotos/miguelangelo.jpeg' },
-      { nome: 'Amarillis Vieira', data: '2014-05-04', foto: 'fotos/amarillis.jpg' },
-      { nome: 'Júlia Vieira', data: '2015-09-11', foto: 'fotos/julia.jpg' },
-      { nome: 'Antonella Vieira', data: '2017-10-08', foto: 'fotos/antonella.jpg' },
-      { nome: 'Alice Vieira', data: '2018-04-21', foto: 'fotos/alice.jpg' },
-      { nome: 'Pedro Eduardo Vieira', data: '2020-03-03', foto: 'fotos/pedro.jpg' },
-      { nome: 'Ravi Vieira', data: '2020-09-14', foto: 'fotos/ravi.jpg' },
-      { nome: 'Francisco Daniel Vieira', data: '2023-02-17', foto: 'fotos/lorenzo.jpg' },
-    ];
+      {
+        nome: 'Clarisse Vieira',
+        data: '2004-11-04',
+        foto: 'fotos/clarisse.jpeg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Andrew Gabriel Vieira',
+        data: '2006-05-31',
+        foto: 'fotos/gabriel.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Gabriele Vieira',
+        data: '2009-06-08',
+        foto: 'fotos/gabriele.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Ryan Lucas Vieira',
+        data: '2010-08-16',
+        foto: 'fotos/ryan.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Eduardo Jorge Vieira',
+        data: '2012-04-11',
+        foto: 'fotos/eduardojorge.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Miguel Angelo Vieira',
+        data: '2014-02-19',
+        foto: 'fotos/miguelangelo.jpeg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Amarillis Vieira',
+        data: '2014-05-04',
+        foto: 'fotos/amarillis.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+
+      {
+        nome: 'Júlia Vieira',
+        data: '2015-09-11',
+        foto: 'fotos/julia.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Antonella Vieira',
+        data: '2017-10-08',
+        foto: 'fotos/antonella.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Alice Vieira',
+        data: '2018-04-21',
+        foto: 'fotos/alice.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Pedro Eduardo Vieira',
+        data: '2020-03-03',
+        foto: 'fotos/pedro.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Ravi Vieira',
+        data: '2020-09-14',
+        foto: 'fotos/ravi.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+      {
+        nome: 'Francisco Daniel Vieira',
+        data: '2023-02-17',
+        foto: 'fotos/lorenzo.jpg',
+        preferencias: 'Música clássica, Romances, Vôlei',
+        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
+      },
+    ];  
+
 
     function salvarNoLocalStorage() {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(membrosDaFamilia));
     }
 
     function criarCard(membro) {
-        const hoje = new Date();
-        const [ano, mes, dia] = membro.data.split('-').map(Number);
-        const dataNasc = new Date(ano, mes - 1, dia);
+      const hoje = new Date();
+      const [ano, mes, dia] = membro.data.split('-').map(Number);
+      const dataNasc = new Date(ano, mes - 1, dia);
 
-        const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+      const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
 
-        return `
-            <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
-            <img src="${membro.foto}" alt="Foto de ${membro.nome}">
-            <div class="name">${membro.nome}</div>
-            <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
-            </div>
-        `;
-        }
+      return `
+        <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
+          <img src="${membro.foto}" alt="Foto de ${membro.nome}">
+          <div class="name">${membro.nome}</div>
+          <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
+          ${membro.preferencias ? `<p><strong>Preferências:</strong><br>${membro.preferencias}</p>` : ''}
+          ${membro.presentes ? `
+            <p><strong>Quer ganhar:</strong><br>
+            <ul style="text-align: left; padding-left: 20px;">
+              ${membro.presentes.map(p => `<li>${p}</li>`).join('')}
+            </ul></p>` : ''}
+        </div>
+      `;
+    } 
 
-
-    // function criarCard(membro) {
-    //   const hoje = new Date();
-    //   const dataNasc = new Date(membro.data);
-    //   const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
-
-    //   return `
-    //     <div class="card ${fazAniversarioEsteMes ? 'highlight' : ''}">
-    //       <img src="${membro.foto}" alt="Foto de ${membro.nome}">
-    //       <div class="name">${membro.nome}</div>
-    //       <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</div>
-    //     </div>
-    //   `;
-    // }
 
     function exibirMembros(lista = membrosDaFamilia) {
       const container = document.getElementById('cardsContainer');
@@ -235,17 +307,26 @@
       const nome = document.getElementById('nome').value.trim();
       const data = document.getElementById('data').value;
       const foto = document.getElementById('foto').value.trim();
+      const preferencias = document.getElementById('preferencias').value.trim();
+
+      const presente1 = document.getElementById('presente1').value.trim();
+      const presente2 = document.getElementById('presente2').value.trim();
+      const presente3 = document.getElementById('presente3').value.trim();
+
+      const presentes = [presente1, presente2, presente3].filter(p => p);
 
       if (!nome || !data || !foto) {
-        alert("Preencha todos os campos!");
+        alert("Preencha nome, data e foto!");
         return;
       }
 
-      membrosDaFamilia.push({ nome, data, foto });
+      membrosDaFamilia.push({ nome, data, foto, preferencias, presentes });
       salvarNoLocalStorage();
       exibirMembros();
       event.target.reset();
     }
+
+  
 
     // Inicialização
     exibirMembros();
