@@ -400,13 +400,16 @@
       `;
     }
 
-    // Exibir membros da aba ativa (e aplicar filtro)
-    function exibirMembros() {
+    // Exibir membros da aba ativa (ou lista customizada)
+    function exibirMembros(lista = null) {
       const filtro = document.getElementById('searchInput').value.toLowerCase();
       const container = document.getElementById('cardsContainer');
       container.innerHTML = '';
-      const listaFiltrada = dadosFamilia[abaAtiva].filter(m => m.nome.toLowerCase().includes(filtro));
-      listaFiltrada.forEach(m => {
+
+      // Se lista customizada passada, usa ela, senão usa membros da aba ativa com filtro
+      const listaParaExibir = lista || dadosFamilia[abaAtiva].filter(m => m.nome.toLowerCase().includes(filtro));
+
+      listaParaExibir.forEach(m => {
         container.innerHTML += criarCard(m);
       });
     }
@@ -429,8 +432,10 @@
     // Mostrar próximo aniversário na aba ativa
     function mostrarProximoAniversario() {
       const hoje = new Date();
+      document.getElementById('searchInput').value = ''; // limpa busca para não atrapalhar
 
-      const proximo = dadosFamilia[abaAtiva]
+      // Mapeia aniversários já ajustando para o ano atual ou próximo ano se já passou
+      const proximosAniversarios = dadosFamilia[abaAtiva]
         .map(m => {
           const aniversario = new Date(m.data);
           aniversario.setFullYear(hoje.getFullYear());
@@ -444,7 +449,9 @@
 
           return { ...m, date: aniversario };
         })
-        .sort((a, b) => a.date - b.date)[0];
+        .sort((a, b) => a.date - b.date);
+
+      const proximo = proximosAniversarios[0];
 
       if (proximo) {
         exibirMembros([proximo]);
