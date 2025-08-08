@@ -17,31 +17,9 @@
       color: #333;
     }
 
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .tab {
-      padding: 10px 20px;
-      background: #4CAF50;
-      color: white;
-      cursor: pointer;
-      border-radius: 8px;
-      user-select: none;
-    }
-
-    .tab.active {
-      background: #2196F3;
-      font-weight: bold;
-      box-shadow: 0 0 8px rgba(33, 150, 243, 0.7);
-    }
-
-    .controls {
+    .controls, .form-container {
       text-align: center;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
 
     .controls button {
@@ -107,29 +85,22 @@
 
     .form-container {
       margin-top: 30px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     form input {
       padding: 8px;
-      margin: 5px 0;
+      margin: 5px;
       border-radius: 6px;
       border: 1px solid #ccc;
-      width: 100%;
-      box-sizing: border-box;
     }
 
     form button {
-      padding: 10px;
+      padding: 8px 12px;
       background-color: #2196F3;
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
     }
 
     @media (max-width: 600px) {
@@ -146,47 +117,33 @@
 <body>
   <h1>Aniversários da Família 🎉</h1>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="netos" onclick="trocarAba('netos')">Netos</div>
-    <div class="tab" data-tab="avos" onclick="trocarAba('avos')">Avós</div>
-    <div class="tab" data-tab="tios" onclick="trocarAba('tios')">Tios</div>
-  </div>
-
   <div class="controls">
     <input type="text" id="searchInput" placeholder="Buscar por nome..." oninput="filtrarMembros()" />
     <br>
     <button onclick="ordenarPorMes()">Ordenar por mês</button>
     <button onclick="mostrarProximoAniversario()">Próximo Aniversário</button>
+    <button onclick="exportarParaGoogleCalendar()">Exportar para Google Calendar (.ics)</button>
   </div>
 
   <div class="container" id="cardsContainer">
-    <!-- Cards da aba ativa -->
+    <!-- Cards gerados pelo JS -->
   </div>
 
-  <div class="form-container" id="formContainer">
-    <!-- Formulário da aba ativa -->
+  <div class="form-container">
+    <h2>Adicionar Novo Membro 👨‍👩‍👧</h2>
+    <form onsubmit="adicionarMembro(event)">
+      <input type="text" id="nome" placeholder="Nome completo" required />
+      <input type="date" id="data" required />
+      <input type="url" id="foto" placeholder="URL da foto (ou local)" required />
+      <button type="submit">Adicionar</button>
+    </form>
   </div>
 
   <script>
-    // Dados separados por categoria, salvos no localStorage com chaves distintas
-    const categorias = {
-      netos: 'familiaNetos',
-      avos: 'familiaAvos',
-      tios: 'familiaTios'
-    };
-
-    // Estado atual da aba
-    let abaAtiva = 'netos';
-
-    // Função para carregar dados do localStorage ou valores iniciais
-    function carregarDados(aba) {
-      const dados = JSON.parse(localStorage.getItem(categorias[aba]));
-      if (dados) return dados;
-
-      // Dados iniciais para netos (exemplo)
-      if (aba === 'netos') {
-        return [
-          {
+    // Salva e carrega dados do localStorage
+    const LOCAL_KEY = 'familiaAniversarios';
+    let membrosDaFamilia = JSON.parse(localStorage.getItem(LOCAL_KEY)) || [
+      {
         nome: 'Clarisse Vieira',
         data: '2004-11-04',
         foto: 'fotos/clarisse.jpeg',
@@ -278,111 +235,21 @@
         preferencias: 'Música clássica, Romances, Vôlei',
         presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
       },
-          // ... outros netos
-        ];
-      }
+    ];  
 
-      // Dados iniciais para avós (exemplo)
-      if (aba === 'avos') {
-        return [
-          {
-            nome: 'Maria Vieira',
-            data: '1958-08-22',
-            foto: 'fotos/maria.jpeg',
-            preferencias: 'Jardinagem, Poesia, Viagens',
-            presentes: ['Livro de jardinagem', 'Chá especial', 'Vaso decorativo']
-          },
-          {
-            nome: 'José Vieira',
-            data: '1959-05-02',
-            foto: 'fotos/jose.jpeg',
-            preferencias: 'Xadrez, Cinema clássico, Caminhadas',
-            presentes: ['Relógio clássico', 'Livro de xadrez', 'Passeio no parque']
-          }
-        ];
-      }
 
-      // Dados iniciais para tios (exemplo)
-      if (aba === 'tios') {
-        return [
-          {
-            nome: 'Gisele Vieira',
-            data: '1980-08-24',
-            foto: 'fotos/gisele.jpeg',            
-            preferencias: 'Yoga, Fotografia, Viagens',
-            presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem']
-          },
-          {
-            nome: 'Glauco Vieira',
-            data: '1983-03-27',
-            foto: 'fotos/glauco.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Renilson Vieira',
-            data: '1984-09-19',
-            foto: 'fotos/renilson.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Rafael Vieira',
-            data: '1988-01-13',
-            foto: 'fotos/rafael.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Renato Vieira',
-            data: '1989-11-15',
-            foto: 'fotos/renato.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Grasiele Vieira',
-            data: '1991-07-21',
-            foto: 'fotos/grasiele.jpeg',            
-            preferencias: 'Yoga, Fotografia, Viagens',
-            presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem']
-          },
-        ];
-      }
-
-      return [];
+    function salvarNoLocalStorage() {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(membrosDaFamilia));
     }
 
-    // Dados em memória
-    let dadosFamilia = {
-      netos: carregarDados('netos'),
-      avos: carregarDados('avos'),
-      tios: carregarDados('tios')
-    };
-
-    // Salvar dados no localStorage
-    function salvarDados(aba) {
-      localStorage.setItem(categorias[aba], JSON.stringify(dadosFamilia[aba]));
-    }
-
-    // Troca aba
-    function trocarAba(aba) {
-      abaAtiva = aba;
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.tab === aba);
-      });
-      exibirMembros();
-      criarFormulario();
-      document.getElementById('searchInput').value = '';
-    }
-
-    // Criar cards para os membros
     function criarCard(membro) {
       const hoje = new Date();
       const [ano, mes, dia] = membro.data.split('-').map(Number);
       const dataNasc = new Date(ano, mes - 1, dia);
 
       const fazAniversarioEsteMes = dataNasc.getMonth() === hoje.getMonth();
+
+      // Calcula a idade que a pessoa fará neste ano
       const idadeNesteAno = hoje.getFullYear() - ano;
 
       return `
@@ -400,25 +267,22 @@
       `;
     }
 
-    // Exibir membros da aba ativa (e aplicar filtro)
-    function exibirMembros() {
-      const filtro = document.getElementById('searchInput').value.toLowerCase();
+    function exibirMembros(lista = membrosDaFamilia) {
       const container = document.getElementById('cardsContainer');
       container.innerHTML = '';
-      const listaFiltrada = dadosFamilia[abaAtiva].filter(m => m.nome.toLowerCase().includes(filtro));
-      listaFiltrada.forEach(m => {
+      lista.forEach(m => {
         container.innerHTML += criarCard(m);
       });
     }
 
-    // Filtrar membros pelo input
     function filtrarMembros() {
-      exibirMembros();
+      const filtro = document.getElementById('searchInput').value.toLowerCase();
+      const filtrados = membrosDaFamilia.filter(m => m.nome.toLowerCase().includes(filtro));
+      exibirMembros(filtrados);
     }
 
-    // Ordenar membros por mês
     function ordenarPorMes() {
-      dadosFamilia[abaAtiva].sort((a, b) => {
+      membrosDaFamilia.sort((a, b) => {
         const mesA = new Date(a.data).getMonth();
         const mesB = new Date(b.data).getMonth();
         return mesA - mesB;
@@ -426,15 +290,15 @@
       exibirMembros();
     }
 
-    // Mostrar próximo aniversário na aba ativa
     function mostrarProximoAniversario() {
       const hoje = new Date();
 
-      const proximo = dadosFamilia[abaAtiva]
+      const proximo = membrosDaFamilia
         .map(m => {
           const aniversario = new Date(m.data);
           aniversario.setFullYear(hoje.getFullYear());
 
+          // Se já passou neste ano, joga para o próximo
           if (
             aniversario.getMonth() < hoje.getMonth() ||
             (aniversario.getMonth() === hoje.getMonth() && aniversario.getDate() < hoje.getDate())
@@ -452,26 +316,8 @@
         alert("Nenhum próximo aniversário encontrado!");
       }
     }
+    
 
-    // Criar formulário dinâmico para a aba ativa
-    function criarFormulario() {
-      const container = document.getElementById('formContainer');
-      container.innerHTML = `
-        <h2>Adicionar Novo Membro (${abaAtiva.charAt(0).toUpperCase() + abaAtiva.slice(1)}) 👨‍👩‍👧</h2>
-        <form onsubmit="adicionarMembro(event)">
-          <input type="text" id="nome" placeholder="Nome completo" required />
-          <input type="date" id="data" required />
-          <input type="url" id="foto" placeholder="URL da foto (ou local)" required />
-          <input type="text" id="preferencias" placeholder="Preferências" />
-          <input type="text" id="presente1" placeholder="Presente 1" />
-          <input type="text" id="presente2" placeholder="Presente 2" />
-          <input type="text" id="presente3" placeholder="Presente 3" />
-          <button type="submit">Adicionar</button>
-        </form>
-      `;
-    }
-
-    // Adicionar novo membro à aba ativa
     function adicionarMembro(event) {
       event.preventDefault();
       const nome = document.getElementById('nome').value.trim();
@@ -490,14 +336,35 @@
         return;
       }
 
-      dadosFamilia[abaAtiva].push({ nome, data, foto, preferencias, presentes });
-      salvarDados(abaAtiva);
+      membrosDaFamilia.push({ nome, data, foto, preferencias, presentes });
+      salvarNoLocalStorage();
       exibirMembros();
       event.target.reset();
+    }  
+
+    function exportarParaGoogleCalendar() {
+      let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Aniversarios Familia//PT\n";
+
+      membrosDaFamilia.forEach(m => {
+        const date = new Date(m.data);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        const startDate = `2025${month}${day}`;
+        icsContent += `BEGIN:VEVENT\nSUMMARY:Aniversário de ${m.nome}\nDTSTART;VALUE=DATE:${startDate}\nRRULE:FREQ=YEARLY\nEND:VEVENT\n`;
+      });
+
+      icsContent += "END:VCALENDAR";
+
+      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'aniversarios.ics';
+      a.click();
+      URL.revokeObjectURL(a.href);
     }
 
     // Inicialização
-    criarFormulario();
     exibirMembros();
   </script>
 </body>
