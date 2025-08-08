@@ -122,6 +122,7 @@
     <br>
     <button onclick="ordenarPorMes()">Ordenar por mês</button>
     <button onclick="mostrarProximoAniversario()">Próximo Aniversário</button>
+    <button onclick="exportarParaGoogleCalendar()">Exportar para Google Calendar (.ics)</button>
   </div>
 
   <div class="container" id="cardsContainer">
@@ -340,6 +341,28 @@
       exibirMembros();
       event.target.reset();
     }  
+
+    function exportarParaGoogleCalendar() {
+      let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Aniversarios Familia//PT\n";
+
+      membrosDaFamilia.forEach(m => {
+        const date = new Date(m.data);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        const startDate = `2025${month}${day}`;
+        icsContent += `BEGIN:VEVENT\nSUMMARY:Aniversário de ${m.nome}\nDTSTART;VALUE=DATE:${startDate}\nRRULE:FREQ=YEARLY\nEND:VEVENT\n`;
+      });
+
+      icsContent += "END:VCALENDAR";
+
+      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'aniversarios.ics';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
 
     // Inicialização
     exibirMembros();
