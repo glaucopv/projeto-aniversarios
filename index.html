@@ -105,33 +105,6 @@
       box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
     }
 
-    .form-container {
-      margin-top: 30px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    form input {
-      padding: 8px;
-      margin: 5px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    form button {
-      padding: 10px;
-      background-color: #2196F3;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
-    }
-
     @media (max-width: 600px) {
       .card {
         width: 90%;
@@ -163,207 +136,63 @@
     <!-- Cards da aba ativa -->
   </div>
 
-  <div class="form-container" id="formContainer">
-    <!-- Formulário da aba ativa -->
-  </div>
-
   <script>
-    // Dados separados por categoria, salvos no localStorage com chaves distintas
     const categorias = {
       netos: 'familiaNetos',
       avos: 'familiaAvos',
       tios: 'familiaTios'
     };
 
-    // Estado atual da aba
     let abaAtiva = 'netos';
 
-    // Função para carregar dados do localStorage ou valores iniciais
     function carregarDados(aba) {
       const dados = JSON.parse(localStorage.getItem(categorias[aba]));
       if (dados) return dados;
 
-      // Dados iniciais para netos (exemplo)
       if (aba === 'netos') {
         return [
-          {
-        nome: 'Clarisse Vieira',
-        data: '2004-11-04',
-        foto: 'fotos/clarisse.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Andrew Gabriel Vieira',
-        data: '2006-05-31',
-        foto: 'fotos/gabriel.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Maria Gabriele Vieira',
-        data: '2009-06-08',
-        foto: 'fotos/gabriele.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Ryan Lucas Vieira',
-        data: '2010-08-16',
-        foto: 'fotos/ryan.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Eduardo Jorge Vieira',
-        data: '2012-04-11',
-        foto: 'fotos/eduardojorge.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Miguel Angelo Vieira',
-        data: '2014-02-19',
-        foto: 'fotos/miguelangelo.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Camisa de Time', 'Tênis novo']
-      },
-      {
-        nome: 'Amarillis Vieira',
-        data: '2014-05-04',
-        foto: 'fotos/amarillis.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-
-      {
-        nome: 'Júlia Vieira',
-        data: '2015-09-11',
-        foto: 'fotos/julia.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Antonella Vieira',
-        data: '2017-10-08',
-        foto: 'fotos/antonella.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Alice Vieira',
-        data: '2018-04-21',
-        foto: 'fotos/alice.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Pedro Eduardo Vieira',
-        data: '2020-03-03',
-        foto: 'fotos/pedroeduardo.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'José Ravi Vieira',
-        data: '2020-09-14',
-        foto: 'fotos/ravi.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-      {
-        nome: 'Francisco Daniel Vieira',
-        data: '2023-02-17',
-        foto: 'fotos/francisco.jpeg',
-        preferencias: 'Música clássica, Romances, Vôlei',
-        presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo']
-      },
-          // ... outros netos
+          { nome: 'Clarisse Vieira', data: '2004-11-04', foto: 'fotos/clarisse.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Andrew Gabriel Vieira', data: '2006-05-31', foto: 'fotos/gabriel.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Maria Gabriele Vieira', data: '2009-06-08', foto: 'fotos/gabriele.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Ryan Lucas Vieira', data: '2010-08-16', foto: 'fotos/ryan.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Eduardo Jorge Vieira', data: '2012-04-11', foto: 'fotos/eduardojorge.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Miguel Angelo Vieira', data: '2014-02-19', foto: 'fotos/miguelangelo.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Camisa de Time', 'Tênis novo'] },
+          { nome: 'Amarillis Vieira', data: '2014-05-04', foto: 'fotos/amarillis.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Júlia Vieira', data: '2015-09-11', foto: 'fotos/julia.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Antonella Vieira', data: '2017-10-08', foto: 'fotos/antonella.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Alice Vieira', data: '2018-04-21', foto: 'fotos/alice.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Pedro Eduardo Vieira', data: '2020-03-03', foto: 'fotos/pedroeduardo.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'José Ravi Vieira', data: '2020-09-14', foto: 'fotos/ravi.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
+          { nome: 'Francisco Daniel Vieira', data: '2023-02-17', foto: 'fotos/francisco.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] }
         ];
       }
 
-      // Dados iniciais para avós (exemplo)
       if (aba === 'avos') {
         return [
-          {
-            nome: 'Maria Vieira',
-            data: '1958-08-22',
-            foto: 'fotos/maria.jpeg',
-            preferencias: 'Jardinagem, Poesia, Viagens',
-            presentes: ['Livro de jardinagem', 'Chá especial', 'Vaso decorativo']
-          },
-          {
-            nome: 'José Vieira',
-            data: '1959-05-02',
-            foto: 'fotos/jose.jpeg',
-            preferencias: 'Xadrez, Cinema clássico, Caminhadas',
-            presentes: ['Relógio clássico', 'Livro de xadrez', 'Passeio no parque']
-          }
+          { nome: 'Maria Vieira', data: '1958-08-22', foto: 'fotos/maria.jpeg', preferencias: 'Jardinagem, Poesia, Viagens', presentes: ['Livro de jardinagem', 'Chá especial', 'Vaso decorativo'] },
+          { nome: 'José Vieira', data: '1959-05-02', foto: 'fotos/jose.jpeg', preferencias: 'Xadrez, Cinema clássico, Caminhadas', presentes: ['Relógio clássico', 'Livro de xadrez', 'Passeio no parque'] }
         ];
       }
 
-      // Dados iniciais para tios (exemplo)
       if (aba === 'tios') {
         return [
-          {
-            nome: 'Gisele Vieira',
-            data: '1980-08-24',
-            foto: 'fotos/gisele.jpeg',            
-            preferencias: 'Yoga, Fotografia, Viagens',
-            presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem']
-          },
-          {
-            nome: 'Glauco Vieira',
-            data: '1983-03-27',
-            foto: 'fotos/glauco.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Renilson Vieira',
-            data: '1984-09-19',
-            foto: 'fotos/renilson.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Rafael Vieira',
-            data: '1988-01-13',
-            foto: 'fotos/rafael.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Renato Vieira',
-            data: '1989-11-15',
-            foto: 'fotos/renato.jpeg',
-            preferencias: 'Futebol, Culinária, Música',
-            presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido']
-          },
-          {
-            nome: 'Grasiele Vieira',
-            data: '1991-07-21',
-            foto: 'fotos/grasiele.jpeg',            
-            preferencias: 'Yoga, Fotografia, Viagens',
-            presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem']
-          },
+          { nome: 'Gisele Vieira', data: '1980-08-24', foto: 'fotos/gisele.jpeg', preferencias: 'Yoga, Fotografia, Viagens', presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem'] },
+          { nome: 'Glauco Vieira', data: '1983-03-27', foto: 'fotos/glauco.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
+          { nome: 'Renilson Vieira', data: '1984-09-19', foto: 'fotos/renilson.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
+          { nome: 'Rafael Vieira', data: '1988-01-13', foto: 'fotos/rafael.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
+          { nome: 'Renato Vieira', data: '1989-11-15', foto: 'fotos/renato.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
+          { nome: 'Grasiele Vieira', data: '1991-07-21', foto: 'fotos/grasiele.jpeg', preferencias: 'Yoga, Fotografia, Viagens', presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem'] }
         ];
       }
 
       return [];
     }
 
-    // Dados em memória
     let dadosFamilia = {
       netos: carregarDados('netos'),
       avos: carregarDados('avos'),
       tios: carregarDados('tios')
     };
-
-    // Salvar dados no localStorage
-    function salvarDados(aba) {
-      localStorage.setItem(categorias[aba], JSON.stringify(dadosFamilia[aba]));
-    }
 
     // Troca aba
     function trocarAba(aba) {
@@ -372,7 +201,6 @@
         tab.classList.toggle('active', tab.dataset.tab === aba);
       });
       exibirMembros();
-      criarFormulario();
       document.getElementById('searchInput').value = '';
     }
 
@@ -406,7 +234,6 @@
       const container = document.getElementById('cardsContainer');
       container.innerHTML = '';
 
-      // Se lista customizada passada, usa ela, senão usa membros da aba ativa com filtro
       const listaParaExibir = lista || dadosFamilia[abaAtiva].filter(m => m.nome.toLowerCase().includes(filtro));
 
       listaParaExibir.forEach(m => {
@@ -434,7 +261,6 @@
       const hoje = new Date();
       document.getElementById('searchInput').value = ''; // limpa busca para não atrapalhar
 
-      // Mapeia aniversários já ajustando para o ano atual ou próximo ano se já passou
       const proximosAniversarios = dadosFamilia[abaAtiva]
         .map(m => {
           const aniversario = new Date(m.data);
@@ -460,51 +286,7 @@
       }
     }
 
-    // Criar formulário dinâmico para a aba ativa
-    function criarFormulario() {
-      const container = document.getElementById('formContainer');
-      container.innerHTML = `
-        <h2>Adicionar Novo Membro (${abaAtiva.charAt(0).toUpperCase() + abaAtiva.slice(1)}) 👨‍👩‍👧</h2>
-        <form onsubmit="adicionarMembro(event)">
-          <input type="text" id="nome" placeholder="Nome completo" required />
-          <input type="date" id="data" required />
-          <input type="url" id="foto" placeholder="URL da foto (ou local)" required />
-          <input type="text" id="preferencias" placeholder="Preferências" />
-          <input type="text" id="presente1" placeholder="Presente 1" />
-          <input type="text" id="presente2" placeholder="Presente 2" />
-          <input type="text" id="presente3" placeholder="Presente 3" />
-          <button type="submit">Adicionar</button>
-        </form>
-      `;
-    }
-
-    // Adicionar novo membro à aba ativa
-    function adicionarMembro(event) {
-      event.preventDefault();
-      const nome = document.getElementById('nome').value.trim();
-      const data = document.getElementById('data').value;
-      const foto = document.getElementById('foto').value.trim();
-      const preferencias = document.getElementById('preferencias').value.trim();
-
-      const presente1 = document.getElementById('presente1').value.trim();
-      const presente2 = document.getElementById('presente2').value.trim();
-      const presente3 = document.getElementById('presente3').value.trim();
-
-      const presentes = [presente1, presente2, presente3].filter(p => p);
-
-      if (!nome || !data || !foto) {
-        alert("Preencha nome, data e foto!");
-        return;
-      }
-
-      dadosFamilia[abaAtiva].push({ nome, data, foto, preferencias, presentes });
-      salvarDados(abaAtiva);
-      exibirMembros();
-      event.target.reset();
-    }
-
     // Inicialização
-    criarFormulario();
     exibirMembros();
   </script>
 </body>
