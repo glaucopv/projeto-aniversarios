@@ -117,14 +117,12 @@
   </style>
 </head>
 <body>
-  <h1>Aniversários da Família Vieira🎉</h1>
+  <h1>Aniversários da Família 🎉</h1>
 
   <div class="tabs">
     <div class="tab active" data-tab="netos" onclick="trocarAba('netos')">Netos</div>
     <div class="tab" data-tab="avos" onclick="trocarAba('avos')">Avós</div>
     <div class="tab" data-tab="tios" onclick="trocarAba('tios')">Tios</div>
-    <div class="tab" data-tab="noras" onclick="trocarAba('noras')">Noras</div>
-    <div class="tab" data-tab="genros" onclick="trocarAba('genros')">Genros</div>
   </div>
 
   <div class="controls">
@@ -142,9 +140,7 @@
     const categorias = {
       netos: 'familiaNetos',
       avos: 'familiaAvos',
-      tios: 'familiaTios',
-      noras: 'familiaNoras',
-      genros: 'familiaGenros'
+      tios: 'familiaTios'
     };
 
     let abaAtiva = 'netos';
@@ -189,29 +185,13 @@
         ];
       }
 
-      if (aba === 'noras') {
-        return [
-          { nome: 'Elizangela Vieira', data: '1980-12-16', foto: 'fotos/elizangela.jpeg', preferencias: 'Culinária, Leitura, Viagens', presentes: ['Cookbook', 'Vinho especial', 'Voucher SPA'] },
-          { nome: 'Visilene Vieira', data: '1988-01-23', foto: 'fotos/visilene.jpeg', preferencias: 'Jardinagem, Artesanato', presentes: ['Kit jardinagem', 'Curso de artesanato', 'Vaso decorativo'] },
-          { nome: 'Rayana Vieira', data: '1989-01-04', foto: 'fotos/rayana.jpeg', preferencias: 'Moda, Música, Cinema', presentes: ['Cartão-presente loja', 'Fones de ouvido', 'Ingressos de cinema'] }
-        ];
-      }
-
-      if (aba === 'genros') {
-        return [
-          { nome: 'Eduardo de Souza', data: '1983-12-11', foto: 'fotos/eduardo_souza.jpeg', preferencias: 'Tecnologia, Ciclismo', presentes: ['Acessório para bike', 'Powerbank', 'Livro de tecnologia'] }
-        ];
-      }
-
       return [];
     }
 
     let dadosFamilia = {
       netos: carregarDados('netos'),
       avos: carregarDados('avos'),
-      tios: carregarDados('tios'),
-      noras: carregarDados('noras'),
-      genros: carregarDados('genros')
+      tios: carregarDados('tios')
     };
 
     // Troca aba
@@ -254,25 +234,7 @@
       const container = document.getElementById('cardsContainer');
       container.innerHTML = '';
 
-      // aplica filtro se não for lista customizada
-      let listaParaExibir = lista || dadosFamilia[abaAtiva].filter(m => m.nome.toLowerCase().includes(filtro));
-
-      // quando não for lista customizada, ordena automaticamente pelos próximos aniversários a partir de hoje
-      if (!lista) {
-        const agora = new Date();
-        const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
-
-        listaParaExibir = listaParaExibir
-          .map(m => {
-            const [ano, mes, dia] = m.data.split('-').map(Number);
-            let aniversario = new Date(hoje.getFullYear(), mes - 1, dia);
-            if (aniversario < hoje) aniversario = new Date(hoje.getFullYear() + 1, mes - 1, dia);
-            const diasRestantes = Math.ceil((aniversario - hoje) / (1000 * 60 * 60 * 24));
-            return { ...m, _diasRestantes: diasRestantes };
-          })
-          .sort((a, b) => a._diasRestantes - b._diasRestantes || a.nome.localeCompare(b.nome))
-          .map(({ _diasRestantes, ...rest }) => rest);
-      }
+      const listaParaExibir = lista || dadosFamilia[abaAtiva].filter(m => m.nome.toLowerCase().includes(filtro));
 
       listaParaExibir.forEach(m => {
         container.innerHTML += criarCard(m);
@@ -284,31 +246,14 @@
       exibirMembros();
     }
 
-    // Ordenar por mês: mostrar apenas aniversários do mês atual, ordenados por dia crescente
+    // Ordenar membros por mês
     function ordenarPorMes() {
-      const agora = new Date();
-      const mesAtual = agora.getMonth() + 1; // 1-12
-
-      // limpa busca para garantir que não filtre resultados inesperadamente
-      document.getElementById('searchInput').value = '';
-
-      const listaMes = dadosFamilia[abaAtiva]
-        .filter(m => {
-          const [, mes] = m.data.split('-').map(Number);
-          return mes === mesAtual;
-        })
-        .sort((a, b) => {
-          const da = a.data.split('-').map(Number)[2];
-          const db = b.data.split('-').map(Number)[2];
-          return da - db || a.nome.localeCompare(b.nome);
-        });
-
-      if (listaMes.length === 0) {
-        alert('Não há aniversários neste mês.');
-        return;
-      }
-
-      exibirMembros(listaMes);
+      dadosFamilia[abaAtiva].sort((a, b) => {
+        const mesA = new Date(a.data).getMonth();
+        const mesB = new Date(b.data).getMonth();
+        return mesA - mesB;
+      });
+      exibirMembros();
     }
 
     // Mostrar próximo aniversário na aba ativa
