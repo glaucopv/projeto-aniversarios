@@ -319,36 +319,33 @@
       exibirMembros(listaMes);
     }
 
-    // Mostrar próximo aniversário (mais próximo em relação à data atual, independente da aba)
+    // Mostrar próximo aniversário na aba ativa
     function mostrarProximoAniversario() {
-      const agora = new Date();
-      const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+      const hoje = new Date();
+      document.getElementById('searchInput').value = ''; // limpa busca para não atrapalhar
 
-      // junta todas as listas (netos, avos, tios, noras, genros)
-      const todasListas = Object.values(dadosFamilia).flat();
-
-      const proximos = todasListas
-        .filter(m => m && m.data)
+      const proximosAniversarios = dadosFamilia[abaAtiva]
         .map(m => {
-          const parts = m.data.split('-').map(Number);
-          // parts: [ano, mes, dia]
-          if (parts.length < 3) return null;
-          const [, mes, dia] = parts;
-          let aniversario = new Date(hoje.getFullYear(), mes - 1, dia);
-          if (aniversario < hoje) aniversario = new Date(hoje.getFullYear() + 1, mes - 1, dia);
-          const diasRestantes = Math.ceil((aniversario - hoje) / (1000 * 60 * 60 * 24));
-          return { ...m, _aniversario: aniversario, _diasRestantes: diasRestantes };
-        })
-        .filter(Boolean)
-        .sort((a, b) => a._diasRestantes - b._diasRestantes || a.nome.localeCompare(b.nome));
+          const aniversario = new Date(m.data);
+          aniversario.setFullYear(hoje.getFullYear());
 
-      const proximo = proximos[0];
+          if (
+            aniversario.getMonth() < hoje.getMonth() ||
+            (aniversario.getMonth() === hoje.getMonth() && aniversario.getDate() < hoje.getDate())
+          ) {
+            aniversario.setFullYear(hoje.getFullYear() + 1);
+          }
+
+          return { ...m, date: aniversario };
+        })
+        .sort((a, b) => a.date - b.date);
+
+      const proximo = proximosAniversarios[0];
 
       if (proximo) {
-        // exibe apenas o membro com o aniversário mais próximo
         exibirMembros([proximo]);
       } else {
-        alert('Nenhum próximo aniversário encontrado.');
+        alert("Nenhum próximo aniversário encontrado!");
       }
     }
 
