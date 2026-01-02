@@ -284,27 +284,35 @@
       exibirMembros();
     }
 
-    // Ordenar por mês: mostrar apenas aniversários do mês atual, ordenados por dia crescente
+    // Ordenar por mês: mostrar todos aniversários do mês atual de todas as abas, ordenados por dia crescente
     function ordenarPorMes() {
       const agora = new Date();
-      const mesAtual = agora.getMonth() + 1; // 1-12
+      const mesAtual = agora.getMonth() + 1;
 
-      // limpa busca para garantir que não filtre resultados inesperadamente
-      document.getElementById('searchInput').value = '';
+      // limpa busca para não interferir
+      const search = document.getElementById('searchInput');
+      if (search) search.value = '';
 
-      const listaMes = dadosFamilia[abaAtiva]
+      // junta todas as listas (netos, avos, tios, noras, genros)
+      const todasListas = Object.values(dadosFamilia).flat();
+
+      const listaMes = todasListas
         .filter(m => {
-          const [, mes] = m.data.split('-').map(Number);
+          if (!m || !m.data) return false;
+          const parts = m.data.split('-').map(Number);
+          if (parts.length < 3) return false;
+          const mes = parts[1];
           return mes === mesAtual;
         })
         .sort((a, b) => {
           const da = a.data.split('-').map(Number)[2];
           const db = b.data.split('-').map(Number)[2];
-          return da - db || a.nome.localeCompare(b.nome);
+          if (da !== db) return da - db;
+          return a.nome.localeCompare(b.nome);
         });
 
       if (listaMes.length === 0) {
-        alert('Não há aniversários neste mês.');
+        alert('Não há aniversários cadastrados para este mês em nenhuma aba.');
         return;
       }
 
