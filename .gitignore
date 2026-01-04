@@ -1,20 +1,2 @@
-# Node.js modules (se usar node)
-node_modules/
-
-# Logs
-*.log
-
-# Build output
-dist/
-build/
-
-# Arquivos do sistema
-.DS_Store
-Thumbs.db
-
-# Arquivos temporários do editor
-*.swp
-*.tmp
-
-# Configurações locais
-.env
+# Firebase config file
+firebase-config.js

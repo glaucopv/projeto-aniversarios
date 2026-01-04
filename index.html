@@ -13,6 +13,7 @@
       --secondary-color: #e94560;
       --font-color: #dcdce4;
       --font-color-secondary: #a7a7b1;
+      --gold-color: #ffd700;
     }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -98,6 +99,7 @@
       text-align: center;
       padding: 20px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
     }
     .card:hover {
       transform: translateY(-5px);
@@ -144,9 +146,16 @@
     .card .edit-btn:hover {
       background-color: var(--secondary-color);
     }
-    .highlight {
-      border: 2px solid var(--secondary-color);
-      box-shadow: 0 0 15px rgba(233, 69, 96, 0.6);
+     .birthday-highlight {
+      border: 3px solid var(--gold-color);
+      box-shadow: 0 0 20px var(--gold-color);
+    }
+    .birthday-message {
+      color: var(--gold-color);
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      text-shadow: 0 0 5px var(--gold-color);
     }
     .modal {
       display: none;
@@ -277,16 +286,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, getDocs, onSnapshot, doc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyA3KF0lV5ebQrIvdf8aeN1ywAcWA5xvF9o",
-      authDomain: "projeto-aniversarios-865-afc19.firebaseapp.com",
-      projectId: "projeto-aniversarios-865-afc19",
-      storageBucket: "projeto-aniversarios-865-afc19.firebasestorage.app",
-      messagingSenderId: "489832529100",
-      appId: "1:489832529100:web:52a165166a17b6a98bd669"
-    };
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+    import { firebaseConfig } from "./firebase-config.js";
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -405,11 +406,21 @@
       const [ano, mes, dia] = membro.data.split('-').map(Number);
       const dataNasc = new Date(ano, mes - 1, dia);
       const idade = calcularIdade(membro.data);
-      
+      const isAniversario = dataNasc.getDate() === hoje.getDate() && dataNasc.getMonth() === hoje.getMonth();
+
       const card = document.createElement('div');
-      card.className = `card ${dataNasc.getMonth() === hoje.getMonth() ? 'highlight' : ''}`;
+      card.className = 'card';
+      if (isAniversario) {
+          card.classList.add('birthday-highlight');
+      }
       card.id = `card-${membro.id}`;
-      card.innerHTML = `
+
+      let cardContent = '';
+      if (isAniversario) {
+          cardContent += `<div class="birthday-message">🎉 Feliz Aniversário! 🎉</div>`;
+      }
+      
+      cardContent += `
           <img src="${membro.foto}" alt="Foto de ${membro.nome}" onerror="this.src='https://i.pravatar.cc/150?u=${membro.nome}'">
           <div class="name">${membro.nome}</div>
           <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })} - ${idade} anos</div>
@@ -420,6 +431,7 @@
           </ul>
           <button class="edit-btn">Editar</button>
       `;
+      card.innerHTML = cardContent;
       card.querySelector('.edit-btn').addEventListener('click', () => abrirModal(membro));
       return card;
     }
@@ -468,7 +480,7 @@
 
     function fecharModal() {
         document.getElementById('editModal').style.display = 'none';
-        newImageFile = null; // Limpa o arquivo ao fechar
+        newImageFile = null; 
     }
     
     async function salvarAlteracoes() {
@@ -478,17 +490,31 @@
 
         const docId = document.getElementById('editDocId').value;
         const categoria = document.getElementById('editCategoria').value;
-        
-        let fotoUrl = dadosFamilia[categoria].find(m => m.id === docId).foto;
+        const membroOriginal = dadosFamilia[categoria].find(m => m.id === docId);
+        let fotoUrl = membroOriginal.foto;
 
         if (newImageFile) {
-            const storageRef = ref(storage, `fotos/${docId}_${newImageFile.name}`);
+            // Se existe uma foto antiga, apaga ela
+            if (fotoUrl && fotoUrl.includes('firebasestorage')) {
+                try {
+                    const oldFileRef = ref(storage, fotoUrl);
+                    await deleteObject(oldFileRef);
+                    console.log("Foto antiga deletada com sucesso.");
+                } catch (error) {
+                    // Se a foto antiga não for encontrada, apenas loga o erro e continua.
+                    console.warn("Não foi possível deletar a foto antiga (pode já ter sido removida):", error);
+                }
+            }
+
+            // Faz o upload da nova foto
+            const newFileName = `${docId}_${Date.now()}_${newImageFile.name}`;
+            const storageRef = ref(storage, `fotos/${newFileName}`);
             try {
                 const snapshot = await uploadBytes(storageRef, newImageFile);
                 fotoUrl = await getDownloadURL(snapshot.ref);
-                console.log('Upload concluído, URL:', fotoUrl);
+                console.log('Upload da nova foto concluído, URL:', fotoUrl);
             } catch (error) {
-                console.error("Erro no upload da imagem: ", error);
+                console.error("Erro no upload da nova imagem: ", error);
                 alert('Ocorreu um erro ao salvar a nova foto.');
                 saveBtn.disabled = false;
                 saveBtn.innerText = 'Salvar';
