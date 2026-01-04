@@ -1,54 +1,31 @@
-Aniversários da Família 🎉
+# Aniversários da Família 🎉
 
-Este projeto é uma aplicação web simples para exibir os aniversários da família, com fotos, datas, preferências pessoais e sugestões de presentes. O objetivo é organizar e facilitar o acompanhamento das datas especiais e gostos de cada membro para presentes futuros.
-Tecnologias Utilizadas
+Este projeto é uma aplicação web para exibir os aniversários da família, com fotos, datas, preferências pessoais e sugestões de presentes. O objetivo é organizar e facilitar o acompanhamento das datas especiais e gostos de cada membro.
 
-    HTML5 & CSS3: Estrutura e estilização da página, com foco em responsividade para diferentes dispositivos (desktop e mobile).
+## Tecnologias Utilizadas
 
-    JavaScript (Vanilla JS): Lógica para manipulação dinâmica dos dados, interação com o usuário, filtros, ordenação e armazenamento local.
+- **HTML5 & CSS3:** Estrutura e estilização da página, com foco em responsividade.
+- **JavaScript (Vanilla JS):** Lógica para manipulação dinâmica dos dados, interação com o usuário, filtros e ordenação.
+- **Firebase (Firestore):** Banco de dados NoSQL em nuvem para armazenamento centralizado e sincronização em tempo real dos dados entre todos os dispositivos.
+- **Flexbox & Media Queries:** Layout flexível e adaptável para diferentes telas.
 
-    LocalStorage: Persistência dos dados no navegador, garantindo que as informações permaneçam entre sessões sem necessidade de backend.
+## Funcionalidades Principais
 
-    Flexbox & Media Queries: Layout flexível e adaptável, proporcionando uma boa experiência em telas pequenas e grandes.
+- Exibição dos membros da família com foto, nome, idade, preferências e sugestões de presentes.
+- Sincronização de dados em tempo real com o backend na nuvem (Firestore).
+- Busca dinâmica por nome.
+- Ordenação dos aniversários por mês.
+- Destaque visual para membros que fazem aniversário no mês atual.
+- Visualização do próximo aniversário.
+- Edição de informações diretamente na interface.
 
-    Boas práticas de desenvolvimento:
+## Acompanhamento de Melhorias
 
-        Código modular e organizado, facilitando manutenção e futuras expansões.
-
-        Tratamento correto de datas e manipulação para exibição precisa.
-
-        Uso de template strings para gerar conteúdo dinâmico no DOM.
-
-        Validação simples de formulários para garantir integridade dos dados.
-
-        Interface amigável e acessível, com botões e campos claros.
-
-Funcionalidades Principais
-
-    Exibição dos membros da família com foto, nome, data de nascimento, idade que completarão no ano, preferências e opções de presentes.
-
-    Busca dinâmica por nome.
-
-    Ordenação dos aniversários por mês.
-
-    Destaque visual para membros que fazem aniversário no mês atual.
-
-    Visualização do próximo aniversário.
-
-    Adição de novos membros diretamente pela interface, com armazenamento automático local.
-
-    Suporte para editar preferências e opções de presente.
-
-Possíveis Melhorias Futuras
-
-    Adicionar funcionalidade para editar e remover membros.
-
-    Implementar backend para armazenamento centralizado e sincronizado entre dispositivos.
-
-    Envio de notificações ou lembretes por e-mail ou push.
-
-    Autenticação para proteger os dados.
-
-    Upload de fotos diretamente pela interface (em vez de usar URLs).
-
-    Internacionalização para suportar múltiplos idiomas.
+- [x] Implementar backend para armazenamento centralizado (Feito com Firebase/Firestore).
+- [x] Adicionar funcionalidade para editar membros (Feito).
+- [x] Upload de fotos diretamente pela interface (Feito).
+- [ ] Adicionar funcionalidade para remover membros.
+- [ ] Adicionar novos membros diretamente pela interface.
+- [ ] Envio de notificações ou lembretes por e-mail ou push.
+- [ ] Autenticação de usuários para proteger os dados.
+- [ ] Internacionalização para suportar múltiplos idiomas.
