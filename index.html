@@ -1,598 +1,97 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aniversários da Família</title>
-
-  <style>
-    :root {
-      --bg-color: #1a1a2e;
-      --card-color: #16213e;
-      --primary-color: #0f3460;
-      --secondary-color: #e94560;
-      --font-color: #dcdce4;
-      --font-color-secondary: #a7a7b1;
-      --gold-color: #ffd700;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--font-color);
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: var(--font-color);
-      font-size: 2.5em;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px var(--secondary-color);
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 25px;
-    }
-    .tab {
-      padding: 10px 20px;
-      background: var(--primary-color);
-      color: var(--font-color);
-      cursor: pointer;
-      border-radius: 20px;
-      user-select: none;
-      transition: all 0.3s ease;
-      border: 1px solid var(--primary-color);
-    }
-    .tab:hover {
-      background-color: var(--secondary-color);
-      border-color: var(--secondary-color);
-    }
-    .tab.active {
-      background: var(--secondary-color);
-      font-weight: bold;
-      box-shadow: 0 0 12px rgba(233, 69, 96, 0.7);
-    }
-    .controls {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .controls button {
-      margin: 8px;
-      padding: 12px 20px;
-      border: none;
-      background-color: var(--primary-color);
-      color: var(--font-color);
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .controls button:hover {
-       background-color: var(--secondary-color);
-    }
-    .controls input {
-      padding: 12px;
-      font-size: 16px;
-      width: 350px;
-      max-width: 90%;
-      background-color: var(--card-color);
-      border: 1px solid var(--primary-color);
-      border-radius: 20px;
-      color: var(--font-color);
-      margin-bottom: 10px;
-    }
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
-      padding: 20px;
-    }
-    .card {
-      background-color: var(--card-color);
-      border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-      overflow: hidden;
-      width: 280px;
-      text-align: center;
-      padding: 20px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.6);
-    }
-    .card img {
-      width: 100%;
-      height: 240px;
-      object-fit: cover;
-      object-position: center 35%;
-      border-radius: 10px;
-      border: 4px solid var(--secondary-color);
-      margin-bottom: 15px;
-    }
-    .card .name {
-      font-size: 1.4em;
-      margin: 10px 0 5px;
-      font-weight: bold;
-    }
-    .card .birthday {
-      font-size: 1.1em;
-      color: var(--font-color-secondary);
-      margin-bottom: 15px;
-    }
-    .card p {
-      font-size: 0.95em;
-      color: var(--font-color-secondary);
-    }
-    .card ul {
-      list-style-type: none;
-      padding: 0;
-      color: var(--font-color-secondary);
-    }
-    .card .edit-btn {
-      margin-top: 15px;
-      padding: 8px 16px;
-      background-color: var(--primary-color);
-      color: var(--font-color);
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    .card .edit-btn:hover {
-      background-color: var(--secondary-color);
-    }
-     .birthday-highlight {
-      border: 3px solid var(--gold-color);
-      box-shadow: 0 0 20px var(--gold-color);
-    }
-    .birthday-message {
-      color: var(--gold-color);
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-bottom: 10px;
-      text-shadow: 0 0 5px var(--gold-color);
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.7);
-      padding-top: 60px;
-    }
-    .modal-content {
-      background-color: var(--card-color);
-      margin: 5% auto;
-      padding: 30px;
-      border: 1px solid var(--secondary-color);
-      width: 80%;
-      max-width: 500px;
-      border-radius: 15px;
-    }
-    .modal-content label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    .modal-content input[type="text"], .modal-content textarea {
-      width: calc(100% - 24px);
-      padding: 12px;
-      margin-top: 5px;
-      border-radius: 8px;
-      border: 1px solid var(--primary-color);
-      background-color: var(--bg-color);
-      color: var(--font-color);
-    }
-     .modal-content input[type="file"] {
-      display: none;
-    }
-    .modal-content .file-upload-label {
-        display: inline-block;
-        padding: 10px 15px;
-        background-color: var(--primary-color);
-        color: var(--font-color);
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-     .modal-content .file-upload-label:hover {
-        background-color: var(--secondary-color);
-    }
-    .modal-content textarea {
-        resize: vertical;
-        min-height: 80px;
-    }
-    #imagePreview {
-        margin-top: 15px;
-        max-width: 100%;
-        max-height: 200px;
-        border-radius: 10px;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .modal-buttons {
-      margin-top: 20px;
-      text-align: right;
-    }
-    .modal-buttons button {
-      padding: 10px 20px;
-      border-radius: 20px;
-      border: none;
-      cursor: pointer;
-    }
-    .save-btn {
-      background-color: var(--secondary-color);
-      color: var(--font-color);
-    }
-    .cancel-btn {
-      background-color: #6c757d;
-      color: var(--font-color);
-      margin-left: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-  <h1>Aniversários da Família Vieira🎉</h1>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="netos">Netos</div>
-    <div class="tab" data-tab="avos">Avós</div>
-    <div class="tab" data-tab="filhos">Filhos</div>
-    <div class="tab" data-tab="noras">Noras</div>
-    <div class="tab" data-tab="genros">Genros</div>
+  <!-- Authentication Screen -->
+  <div id="auth-screen">
+    <h1>Aniversários da Família Vieira 🎉</h1>
+    <p>Acesse a plataforma da nossa família para nunca mais perder uma data especial.</p>
+    <button id="login-btn" class="login-btn">
+      Entrar com Google
+    </button>
   </div>
 
-  <div class="controls">
-    <input type="text" id="searchInput" placeholder="Buscar por nome..." />
-    <br>
-    <button id="aniversariosDoMes">Aniversários do Mês</button>
-    <button id="proximoAniversario">Próximo Aniversário</button>
-  </div>
+  <!-- Main App -->
+  <main id="app-container">
+    <div id="user-profile">
+      <img id="user-photo" src="" alt="Foto do Usuário">
+      <span id="user-name"></span>
+      <button id="logout-btn">Sair</button>
+    </div>
 
-  <div class="container" id="cardsContainer"></div>
+    <h1>Aniversários da Família Vieira 🎉</h1>
 
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <h2 id="modalTitle">Editar Membro</h2>
-      <input type="hidden" id="editDocId">
-      <input type="hidden" id="editCategoria">
-      
-      <img id="imagePreview" src="" alt="Pré-visualização da foto">
-      
-      <label for="fileUpload" class="file-upload-label">Escolher Nova Foto</label>
-      <input type="file" id="fileUpload" accept="image/*">
+    <div id="countdown"></div>
 
-      <label for="editPreferencias">Preferências:</label>
-      <textarea id="editPreferencias"></textarea>
-      <label for="editPresentes">Quer Ganhar (um por linha):</label>
-      <textarea id="editPresentes"></textarea>
-      <div class="modal-buttons">
-        <button id="saveBtn" class="save-btn">Salvar</button>
-        <button id="cancelBtn" class="cancel-btn">Cancelar</button>
+    <div class="tabs">
+      <div class="tab active" data-tab="netos">Netos</div>
+      <div class="tab" data-tab="avos">Avós</div>
+      <div class="tab" data-tab="filhos">Filhos</div>
+      <div class="tab" data-tab="noras">Noras</div>
+      <div class="tab" data-tab="genros">Genros</div>
+    </div>
+
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Buscar por nome..." />
+      <div class="controls-row">
+        <button id="aniversariosDoMes">Aniversários do Mês</button>
+        <button id="proximoAniversario">Próximo Aniversário</button>
+        <button id="addMemberBtn" class="btn">Adicionar Membro</button>
       </div>
     </div>
-  </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, onSnapshot, doc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-    import { firebaseConfig } from "./firebase-config.js";
+    <div class="container" id="cardsContainer"></div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    <!-- Edit/Add Modal -->
+    <div id="editModal" class="modal">
+      <div class="modal-content">
+        <form id="editForm">
+            <h2 id="modalTitle">Editar Membro</h2>
+            <input type="hidden" id="editDocId">
+            
+            <label for="editNome">Nome:</label>
+            <input type="text" id="editNome" required>
 
-    let abaAtiva = 'netos';
-    let dadosFamilia = {
-        netos: [],
-        avos: [],
-        filhos: [],
-        noras: [],
-        genros: []
-    };
-    let newImageFile = null;
+            <label for="editData">Data de Nascimento:</label>
+            <input type="date" id="editData" required>
 
-    async function migrarDadosIniciaisParaFirestore() {
-      const familiaCol = collection(db, 'familia');
-      const snapshot = await getDocs(familiaCol);
-      if (!snapshot.empty) {
-        console.log('Dados já existem no Firestore. Migração não necessária.');
-        return;
-      }
-      
-      console.log('Iniciando migração de dados para o Firestore...');
-      const batch = writeBatch(db);
+            <label for="editCategoria">Categoria:</label>
+            <select id="editCategoria" required>
+                <option value="netos">Neto(a)</option>
+                <option value="avos">Avô/Avó</option>
+                <option value="filhos">Filho(a)</option>
+                <option value="noras">Nora</option>
+                <option value="genros">Genro</option>
+            </select>
 
-      const dadosIniciais = {
-        netos: [
-          { nome: 'Clarisse Vieira', data: '2004-11-04', foto: 'fotos/clarisse.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Talita Queiroz', data: '2000-03-25', foto: 'fotos/talita.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Andrew Gabriel Vieira', data: '2006-05-31', foto: 'fotos/gabriel.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Maria Gabriele Vieira', data: '2009-06-08', foto: 'fotos/gabriele.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Ryan Lucas Vieira', data: '2010-08-16', foto: 'fotos/ryan.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Eduardo Jorge Vieira', data: '2012-04-11', foto: 'fotos/eduardojorge.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Miguel Angelo Vieira', data: '2014-02-19', foto: 'fotos/miguelangelo.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Camisa de Time', 'Tênis novo'] },
-          { nome: 'Amarillis Vieira', data: '2014-05-04', foto: 'fotos/amarillis.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Júlia Vieira', data: '2015-09-11', foto: 'fotos/julia.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Antonella Vieira', data: '2017-10-08', foto: 'fotos/antonella.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Alice Vieira', data: '2018-04-21', foto: 'fotos/alice.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Pedro Eduardo Vieira', data: '2020-03-03', foto: 'fotos/pedroeduardo.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'José Ravi Vieira', data: '2020-09-14', foto: 'fotos/ravi.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] },
-          { nome: 'Francisco Daniel Vieira', data: '2023-02-17', foto: 'fotos/francisco.jpeg', preferencias: 'Música clássica, Romances, Vôlei', presentes: ['Fone Bluetooth', 'Livro da Colleen Hoover', 'Tênis novo'] }
-        ],
-        avos: [
-          { nome: 'Maria Vieira', data: '1958-08-22', foto: 'fotos/maria.jpeg', preferencias: 'Jardinagem, Poesia, Viagens', presentes: ['Livro de jardinagem', 'Chá especial', 'Vaso decorativo'] },
-          { nome: 'José Vieira', data: '1959-05-02', foto: 'fotos/jose.jpeg', preferencias: 'Xadrez, Cinema clássico, Caminhadas', presentes: ['Relógio clássico', 'Livro de xadrez', 'Passeio no parque'] }
-        ],
-        filhos: [
-          { nome: 'Gisele Vieira', data: '1980-08-24', foto: 'fotos/gisele.jpeg', preferencias: 'Yoga, Fotografia, Viagens', presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem'] },
-          { nome: 'Glauco Vieira', data: '1983-03-27', foto: 'fotos/glauco.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
-          { nome: 'Renilson Vieira', data: '1984-09-19', foto: 'fotos/renilson.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
-          { nome: 'Rafael Vieira', data: '1987-01-13', foto: 'fotos/rafael.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
-          { nome: 'Renato Vieira', data: '1988-11-15', foto: 'fotos/renato.jpeg', preferencias: 'Futebol, Culinária, Música', presentes: ['Camisa de time', 'Livro de receitas', 'Fones de ouvido'] },
-          { nome: 'Grasiele Vieira', data: '1991-07-21', foto: 'fotos/grasiele.jpeg', preferencias: 'Yoga, Fotografia, Viagens', presentes: ['Tapete de yoga', 'Câmera compacta', 'Voucher de viagem'] }
-        ],
-        noras: [
-          { nome: 'Elizangela Vieira', data: '1980-12-16', foto: 'fotos/elizangela.jpeg', preferencias: 'Culinária, Leitura, Viagens', presentes: ['Cookbook', 'Vinho especial', 'Voucher SPA'] },
-          { nome: 'Visilene Vieira', data: '1988-01-23', foto: 'fotos/visilene.jpeg', preferencias: 'Jardinagem, Artesanato', presentes: ['Kit jardinagem', 'Curso de artesanato', 'Vaso decorativo'] },
-          { nome: 'Rayana Vieira', data: '1989-01-04', foto: 'fotos/rayana.jpeg', preferencias: 'Moda, Música, Cinema', presentes: ['Cartão-presente loja', 'Fones de ouvido', 'Ingressos de cinema'] }
-        ],
-        genros: [
-          { nome: 'Eduardo de Souza', data: '1983-12-11', foto: 'fotos/eduardo_souza.jpeg', preferencias: 'Tecnologia, Ciclismo', presentes: ['Acessório para bike', 'Powerbank', 'Livro de tecnologia'] }
-        ]
-      };
+            <img id="imagePreview" class="image-preview" src="" alt="Pré-visualização da foto">
+            <label for="fileUpload" class="file-upload-label">Escolher Nova Foto</label>
+            <input type="file" id="fileUpload" accept="image/*">
 
-      for (const categoria in dadosIniciais) {
-        dadosIniciais[categoria].forEach(membro => {
-          const docRef = doc(collection(db, 'familia'));
-          batch.set(docRef, { ...membro, categoria: categoria });
-        });
-      }
-      
-      await batch.commit();
-      console.log('Migração concluída com sucesso!');
-    }
+            <label for="editPreferencias">Preferências:</label>
+            <textarea id="editPreferencias"></textarea>
+            
+            <label for="editPresentes">Quer Ganhar (um por linha):</label>
+            <textarea id="editPresentes"></textarea>
 
-    async function carregarDados() {
-      await migrarDadosIniciaisParaFirestore();
+            <div class="modal-buttons">
+              <button id="saveBtn" type="button" class="save-btn">Salvar</button>
+              <button id="cancelBtn" type="button" class="cancel-btn">Cancelar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </main>
 
-      onSnapshot(collection(db, 'familia'), snapshot => {
-        for (const key in dadosFamilia) {
-            dadosFamilia[key] = [];
-        }
+  <script type="module" src="app.js"></script>
 
-        snapshot.forEach(doc => {
-            const membro = { id: doc.id, ...doc.data() };
-            if (membro.categoria && dadosFamilia[membro.categoria]) {
-                dadosFamilia[membro.categoria].push(membro);
-            }
-        });
-        console.log("Dados carregados do Firestore:", dadosFamilia);
-        trocarAba(abaAtiva);
-      });
-    }
-
-    function trocarAba(aba) {
-      abaAtiva = aba;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelector(`.tab[data-tab="${aba}"]`).classList.add('active');
-      exibirMembros();
-    }
-    
-    function calcularIdade(dataNascimento) {
-      const hoje = new Date();
-      const [ano, mes, dia] = dataNascimento.split('-').map(Number);
-      const dataNasc = new Date(ano, mes - 1, dia);
-      let idade = hoje.getFullYear() - dataNasc.getFullYear();
-      const m = hoje.getMonth() - dataNasc.getMonth();
-      if (m < 0 || (m === 0 && hoje.getDate() < dia)) {
-        idade--;
-      }
-      return idade;
-    }
-
-    function criarCard(membro) {
-      const hoje = new Date();
-      const [ano, mes, dia] = membro.data.split('-').map(Number);
-      const dataNasc = new Date(ano, mes - 1, dia);
-      const idade = calcularIdade(membro.data);
-      const isAniversario = dataNasc.getDate() === hoje.getDate() && dataNasc.getMonth() === hoje.getMonth();
-
-      const card = document.createElement('div');
-      card.className = 'card';
-      if (isAniversario) {
-          card.classList.add('birthday-highlight');
-      }
-      card.id = `card-${membro.id}`;
-
-      let cardContent = '';
-      if (isAniversario) {
-          cardContent += `<div class="birthday-message">🎉 Feliz Aniversário! 🎉</div>`;
-      }
-      
-      cardContent += `
-          <img src="${membro.foto}" alt="Foto de ${membro.nome}" onerror="this.src='https://i.pravatar.cc/150?u=${membro.nome}'">
-          <div class="name">${membro.nome}</div>
-          <div class="birthday">${dataNasc.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })} - ${idade} anos</div>
-          <p><strong>Preferências:</strong><br>${membro.preferencias || 'Não informado'}</p>
-          <p><strong>Quer ganhar:</strong></p>
-          <ul>
-            ${membro.presentes && membro.presentes.length > 0 ? membro.presentes.map(p => `<li>- ${p}</li>`).join('') : '<li>Não informado</li>'}
-          </ul>
-          <button class="edit-btn">Editar</button>
-      `;
-      card.innerHTML = cardContent;
-      card.querySelector('.edit-btn').addEventListener('click', () => abrirModal(membro));
-      return card;
-    }
-
-    function exibirMembros(lista = null) {
-      const filtro = document.getElementById('searchInput').value.toLowerCase();
-      const container = document.getElementById('cardsContainer');
-      container.innerHTML = '';
-      
-      let listaBase = lista || dadosFamilia[abaAtiva];
-      if (!listaBase) return;
-
-      let listaParaExibir = listaBase.filter(m => m.nome.toLowerCase().includes(filtro));
-
-      if (!lista) {
-        const agora = new Date();
-        agora.setHours(0,0,0,0);
-        listaParaExibir.sort((a, b) => {
-            const dateA = new Date(a.data);
-            const dateB = new Date(b.data);
-            dateA.setFullYear(agora.getFullYear());
-            dateB.setFullYear(agora.getFullYear());
-            if (dateA < agora) dateA.setFullYear(agora.getFullYear() + 1);
-            if (dateB < agora) dateB.setFullYear(agora.getFullYear() + 1);
-            return dateA - dateB;
-        });
-      }
-      
-      listaParaExibir.forEach(membro => {
-        container.appendChild(criarCard(membro));
-      });
-    }
-
-    function abrirModal(membro) {
-        if (!membro) return;
-        newImageFile = null;
-
-        document.getElementById('modalTitle').innerText = `Editar ${membro.nome}`;
-        document.getElementById('editDocId').value = membro.id;
-        document.getElementById('editCategoria').value = membro.categoria;
-        document.getElementById('imagePreview').src = membro.foto;
-        document.getElementById('editPreferencias').value = membro.preferencias || '';
-        document.getElementById('editPresentes').value = membro.presentes ? membro.presentes.join('\n') : '';
-        document.getElementById('editModal').style.display = 'block';
-    }
-
-    function fecharModal() {
-        document.getElementById('editModal').style.display = 'none';
-        newImageFile = null; 
-    }
-    
-    async function salvarAlteracoes() {
-        const saveBtn = document.getElementById('saveBtn');
-        saveBtn.disabled = true;
-        saveBtn.innerText = 'Salvando...';
-
-        const docId = document.getElementById('editDocId').value;
-        const categoria = document.getElementById('editCategoria').value;
-        const membroOriginal = dadosFamilia[categoria].find(m => m.id === docId);
-        let fotoUrl = membroOriginal.foto;
-
-        if (newImageFile) {
-            // Se existe uma foto antiga, apaga ela
-            if (fotoUrl && fotoUrl.includes('firebasestorage')) {
-                try {
-                    const oldFileRef = ref(storage, fotoUrl);
-                    await deleteObject(oldFileRef);
-                    console.log("Foto antiga deletada com sucesso.");
-                } catch (error) {
-                    // Se a foto antiga não for encontrada, apenas loga o erro e continua.
-                    console.warn("Não foi possível deletar a foto antiga (pode já ter sido removida):", error);
-                }
-            }
-
-            // Faz o upload da nova foto
-            const newFileName = `${docId}_${Date.now()}_${newImageFile.name}`;
-            const storageRef = ref(storage, `fotos/${newFileName}`);
-            try {
-                const snapshot = await uploadBytes(storageRef, newImageFile);
-                fotoUrl = await getDownloadURL(snapshot.ref);
-                console.log('Upload da nova foto concluído, URL:', fotoUrl);
-            } catch (error) {
-                console.error("Erro no upload da nova imagem: ", error);
-                alert('Ocorreu um erro ao salvar a nova foto.');
-                saveBtn.disabled = false;
-                saveBtn.innerText = 'Salvar';
-                return;
-            }
-        }
-        
-        const dadosAtualizados = {
-            foto: fotoUrl,
-            preferencias: document.getElementById('editPreferencias').value,
-            presentes: document.getElementById('editPresentes').value.split('\n').filter(p => p.trim() !== '')
-        };
-        
-        try {
-          await updateDoc(doc(db, 'familia', docId), dadosAtualizados);
-          console.log("Documento atualizado com sucesso!");
-          fecharModal();
-        } catch (error) {
-          console.error("Erro ao atualizar documento: ", error);
-          alert('Ocorreu um erro ao salvar as informações.');
-        } finally {
-            saveBtn.disabled = false;
-            saveBtn.innerText = 'Salvar';
-        }
-    }
-
-    function handleFileSelect(event) {
-        newImageFile = event.target.files[0];
-        if (newImageFile) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('imagePreview').src = e.target.result;
-            }
-            reader.readAsDataURL(newImageFile);
-        }
-    }
-    
-    function ordenarPorMes() {
-        const mesAtual = new Date().getMonth();
-        const todasListas = Object.values(dadosFamilia).flat();
-        const listaMes = todasListas.filter(m => new Date(m.data).getMonth() === mesAtual)
-                                    .sort((a,b) => new Date(a.data).getDate() - new Date(b.data).getDate());
-        if(listaMes.length === 0) alert('Nenhum aniversário este mês.');
-        else exibirMembros(listaMes);
-    }
-    
-    function mostrarProximoAniversario() {
-        const agora = new Date();
-        agora.setHours(0,0,0,0);
-        const todasListas = Object.values(dadosFamilia).flat();
-        
-        todasListas.sort((a, b) => {
-            const dateA = new Date(a.data);
-            const dateB = new Date(b.data);
-            dateA.setFullYear(agora.getFullYear());
-            dateB.setFullYear(agora.getFullYear());
-            if (dateA < agora) dateA.setFullYear(agora.getFullYear() + 1);
-            if (dateB < agora) dateB.setFullYear(agora.getFullYear() + 1);
-            return dateA - dateB;
-        });
-
-        if(todasListas.length > 0) exibirMembros([todasListas[0]]);
-        else alert('Nenhum próximo aniversário encontrado.');
-    }
-    
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => trocarAba(tab.dataset.tab));
-    });
-    document.getElementById('searchInput').addEventListener('input', () => exibirMembros());
-    document.getElementById('aniversariosDoMes').addEventListener('click', ordenarPorMes);
-    document.getElementById('proximoAniversario').addEventListener('click', mostrarProximoAniversario);
-    document.getElementById('saveBtn').addEventListener('click', salvarAlteracoes);
-    document.getElementById('cancelBtn').addEventListener('click', fecharModal);
-    document.getElementById('fileUpload').addEventListener('change', handleFileSelect);
-
-    window.onload = carregarDados;
-
-  </script>
 </body>
 </html>

@@ -1,0 +1,373 @@
+
+:root {
+      --bg-color: #1a1a2e;
+      --card-color: #16213e;
+      --primary-color: #0f3460;
+      --secondary-color: #e94560;
+      --font-color: #dcdce4;
+      --font-color-secondary: #a7a7b1;
+      --gold-color: #ffd700;
+      --surface-color: rgba(255, 255, 255, 0.05);
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      margin: 0;
+      padding: 20px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    main {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--font-color);
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px var(--secondary-color);
+    }
+
+    /* Auth Screen */
+    #auth-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+    #auth-screen h1 {
+        font-size: 3em;
+    }
+    #auth-screen p {
+        font-size: 1.2em;
+        margin-bottom: 40px;
+        max-width: 500px;
+    }
+    .login-btn {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #4285F4;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .login-btn:hover {
+        background-color: #357ae8;
+    }
+
+    /* App container */
+    #app-container {
+        display: none; /* Hidden by default */
+        position: relative;
+    }
+
+    #user-profile {
+        position: absolute;
+        top: 0;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: var(--card-color);
+        padding: 8px 12px;
+        border-radius: 25px;
+    }
+    #user-profile img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    #user-profile span {
+        font-weight: bold;
+    }
+    #logout-btn {
+        padding: 8px 15px;
+        background-color: var(--secondary-color);
+        color: var(--font-color);
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    #logout-btn:hover {
+        opacity: 0.9;
+    }
+
+    /* Countdown */
+    #countdown {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    .tab {
+      padding: 10px 20px;
+      background: var(--primary-color);
+      color: var(--font-color);
+      cursor: pointer;
+      border-radius: 20px;
+      user-select: none;
+      transition: all 0.3s ease;
+      border: 1px solid var(--primary-color);
+    }
+    .tab:hover {
+      background-color: var(--secondary-color);
+      border-color: var(--secondary-color);
+    }
+    .tab.active {
+      background: var(--secondary-color);
+      font-weight: bold;
+      box-shadow: 0 0 12px rgba(233, 69, 96, 0.7);
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .controls button, .btn {
+      margin: 0;
+      padding: 12px 20px;
+      border: none;
+      background-color: var(--primary-color);
+      color: var(--font-color);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .controls button:hover, .btn:hover {
+       background-color: var(--secondary-color);
+    }
+    .controls input {
+      padding: 12px;
+      font-size: 16px;
+      width: 350px;
+      max-width: 90%;
+      background-color: var(--card-color);
+      border: 1px solid var(--primary-color);
+      border-radius: 20px;
+      color: var(--font-color);
+    }
+
+    /* Cards Container */
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      padding: 20px;
+    }
+    .card {
+      background-color: var(--card-color);
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      overflow: hidden;
+      width: 280px;
+      text-align: center;
+      padding: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.6);
+    }
+    .card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      object-position: center 35%;
+      border-radius: 10px;
+      border: 4px solid var(--secondary-color);
+      margin-bottom: 15px;
+    }
+    .card .name {
+      font-size: 1.4em;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    .card .birthday {
+      font-size: 1.1em;
+      color: var(--font-color-secondary);
+      margin-bottom: 15px;
+    }
+    .card p {
+      font-size: 0.95em;
+      color: var(--font-color-secondary);
+    }
+    .card ul {
+      list-style-type: none;
+      padding: 0;
+      color: var(--font-color-secondary);
+      text-align: left;
+    }
+
+    /* Birthday Highlight */
+    .birthday-highlight {
+      border: 3px solid var(--gold-color);
+      box-shadow: 0 0 20px var(--gold-color);
+      animation: pulse-gold 2s infinite, float-animation 3s ease-in-out infinite;
+    }
+    @keyframes float-animation {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    @keyframes pulse-gold {
+      0% { box-shadow: 0 0 10px var(--gold-color); }
+      50% { box-shadow: 0 0 25px var(--gold-color); }
+      100% { box-shadow: 0 0 10px var(--gold-color); }
+    }
+    .birthday-message {
+      color: var(--gold-color);
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      text-shadow: 0 0 5px var(--gold-color);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+      padding-top: 60px;
+    }
+    .modal-content {
+      background-color: var(--card-color);
+      margin: 5% auto;
+      padding: 30px;
+      border: 1px solid var(--secondary-color);
+      width: 80%;
+      max-width: 500px;
+      border-radius: 15px;
+    }
+    .modal-content label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .modal-content input, .modal-content textarea, .modal-content select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid var(--primary-color);
+      background-color: var(--bg-color);
+      color: var(--font-color);
+      font-size: 1rem;
+    }
+     .modal-content input[type="file"] {
+      display: none;
+    }
+    .file-upload-label {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: var(--primary-color);
+        color: var(--font-color);
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s;
+    }
+     .file-upload-label:hover {
+        background-color: var(--secondary-color);
+    }
+    .modal-content textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    .image-preview {
+        margin-top: 15px;
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 10px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .modal-buttons {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .modal-buttons button {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+    }
+    .save-btn {
+      background-color: var(--secondary-color);
+      color: var(--font-color);
+    }
+    .cancel-btn {
+      background-color: #6c757d;
+      color: var(--font-color);
+      margin-left: 10px;
+    }
+
+    /* Skeleton Loading */
+    .skeleton {
+        animation: skeleton-loading 1s linear infinite alternate;
+    }
+    @keyframes skeleton-loading {
+        0% { background-color: var(--primary-color); }
+        100% { background-color: var(--card-color); }
+    }
+    .card .skeleton {
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+    .card .skeleton-img {
+        width: 100%;
+        height: 240px;
+    }
+    .card .skeleton-text {
+        width: 75%;
+        height: 1.4em;
+        margin: 10px auto 5px;
+    }
+    .card .skeleton-subtext {
+        width: 50%;
+        height: 1.1em;
+        margin: 0 auto 15px;
+    }
+
