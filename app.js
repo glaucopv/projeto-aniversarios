@@ -71,7 +71,6 @@ const App = {
         });
         document.getElementById('searchInput').addEventListener('input', () => UI.renderMembers());
         document.getElementById('aniversariosDoMes').addEventListener('click', () => this.filterByMonth());
-        document.getElementById('proximoAniversario').addEventListener('click', () => this.showNextBirthday());
         
         // Modals
         document.getElementById('addMemberBtn').addEventListener('click', () => this.openModal());
@@ -206,38 +205,40 @@ const App = {
         const currentMonth = new Date().getMonth();
         const allMembers = Object.values(this.familyData).flat();
         const monthMembers = allMembers
-            .filter(m => new Date(m.data).getMonth() === currentMonth)
-            .sort((a,b) => new Date(a.data).getDate() - new Date(b.data).getDate());
+            .filter(m => {
+                 const [, month] = m.data.split('-').map(Number);
+                 return month - 1 === currentMonth;
+            })
+            .sort((a,b) => {
+                const [, , dayA] = a.data.split('-').map(Number);
+                const [, , dayB] = b.data.split('-').map(Number);
+                return dayA - dayB;
+            });
         
         if(monthMembers.length === 0) alert('Nenhum aniversário este mês.');
         else UI.renderMembers(monthMembers);
     },
-
-    showNextBirthday() {
-        const nextBirthday = this.findNextBirthday();
-        if (nextBirthday) {
-            UI.renderMembers([nextBirthday]);
-        } else {
-            alert('Nenhum próximo aniversário encontrado.');
-        }
-    },
     
     findNextBirthday() {
         const now = new Date();
-        now.setHours(0,0,0,0);
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const allMembers = Object.values(this.familyData).flat();
         
+        if (allMembers.length === 0) return null;
+
         allMembers.sort((a, b) => {
-            const dateA = new Date(a.data);
-            const dateB = new Date(b.data);
-            dateA.setFullYear(now.getFullYear());
-            dateB.setFullYear(now.getFullYear());
-            if (dateA < now) dateA.setFullYear(now.getFullYear() + 1);
-            if (dateB < now) dateB.setFullYear(now.getFullYear() + 1);
-            return dateA - dateB;
+            const getNextBirthday = (dateString) => {
+                const [, month, day] = dateString.split('-').map(Number);
+                let nextBirthday = new Date(today.getFullYear(), month - 1, day);
+                if (nextBirthday < today) {
+                    nextBirthday.setFullYear(today.getFullYear() + 1);
+                }
+                return nextBirthday;
+            };
+            return getNextBirthday(a.data) - getNextBirthday(b.data);
         });
 
-        return allMembers.length > 0 ? allMembers[0] : null;
+        return allMembers[0];
     },
 
     updateCountdown() {
@@ -245,13 +246,13 @@ const App = {
         UI.renderCountdown(nextBirthday);
     },
 
-    calculateAge(birthDate) {
+    calculateAge(birthDateString) {
         const today = new Date();
-        const [year, month, day] = birthDate.split('-').map(Number);
-        const birthDateObj = new Date(year, month - 1, day);
-        let age = today.getFullYear() - birthDateObj.getFullYear();
-        const m = today.getMonth() - birthDateObj.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < day)) {
+        const [year, month, day] = birthDateString.split('-').map(Number);
+        const birthDate = new Date(year, month - 1, day);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
         return age;
@@ -269,7 +270,7 @@ const UI = {
         document.getElementById('user-name').textContent = user.displayName;
         document.getElementById('user-photo').src = user.photoURL;
         document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('app-container').style.display = 'flex';
     },
 
     showLoadingSkeleton() {
@@ -300,38 +301,65 @@ const UI = {
         } else if (list) {
             membersToRender = list;
         } else if (App.activeTab) {
-            membersToRender = App.familyData[App.activeTab] || [];
-            // Sort by next birthday
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-            membersToRender.sort((a, b) => {
-                const dateA = new Date(a.data);
-                const dateB = new Date(b.data);
-                dateA.setFullYear(now.getFullYear());
-                dateB.setFullYear(now.getFullYear());
-                if (dateA < now) dateA.setFullYear(now.getFullYear() + 1);
-                if (dateB < now) dateB.setFullYear(now.getFullYear() + 1);
-                return dateA - dateB;
-            });
+            membersToRender = [...(App.familyData[App.activeTab] || [])];
         } else {
             App.changeTab('netos'); // Fallback to default tab
             return;
         }
 
+        // --- TIMEZONE-PROOF SORTING LOGIC ---
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        membersToRender.sort((a, b) => {
+            const getBirthDateParts = (dateString) => {
+                const parts = dateString.split('-');
+                return { month: parseInt(parts[1], 10), day: parseInt(parts[2], 10) };
+            };
+
+            const birthDateA = getBirthDateParts(a.data);
+            const birthDateB = getBirthDateParts(b.data);
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
+
+            // --- 1. Birthday Check ---
+            const isBirthdayA = birthDateA.month === currentMonth && birthDateA.day === currentDay;
+            const isBirthdayB = birthDateB.month === currentMonth && birthDateB.day === currentDay;
+            if (isBirthdayA && !isBirthdayB) return -1;
+            if (!isBirthdayA && isBirthdayB) return 1;
+
+            // --- 2. Newly Created Check (within the last minute) ---
+            const isNewA = a.createdAt && (now.getTime() - a.createdAt.toDate().getTime()) < 60000;
+            const isNewB = b.createdAt && (now.getTime() - b.createdAt.toDate().getTime()) < 60000;
+            if (isNewA && !isNewB) return -1;
+            if (!isNewA && isNewB) return 1;
+            if (isNewA && isNewB) return b.createdAt.toDate() - a.createdAt.toDate();
+
+            // --- 3. Default Next Birthday Sort ---
+            const getNextBirthday = (dateString) => {
+                const [, month, day] = dateString.split('-').map(Number);
+                let nextBirthday = new Date(today.getFullYear(), month - 1, day);
+                if (nextBirthday < today) {
+                    nextBirthday.setFullYear(today.getFullYear() + 1);
+                }
+                return nextBirthday;
+            };
+            return getNextBirthday(a.data) - getNextBirthday(b.data);
+        });
+
         if (membersToRender.length > 0) {
            membersToRender.forEach(member => container.appendChild(this.createCard(member)));
         } else if (!searchFilter) {
-           this.showLoadingSkeleton(); // Show skeleton if data is loading
+           this.showLoadingSkeleton();
         }
     },
 
     createCard(member) {
         const today = new Date();
-        const [year, month, day] = member.data.split('-').map(Number);
-        const birthDate = new Date(year, month - 1, day);
+        const [, month, day] = member.data.split('-').map(Number);
         const age = App.calculateAge(member.data);
-        const isBirthday = birthDate.getDate() === today.getDate() && birthDate.getMonth() === today.getMonth();
-
+        const isBirthday = month === today.getMonth() + 1 && day === today.getDate();
+        
         const card = document.createElement('div');
         card.className = 'card';
         card.id = `card-${member.id}`;
@@ -343,10 +371,11 @@ const UI = {
             this.triggerConfetti(card);
         }
         
+        const birthDateForDisplay = new Date(member.data.replace(/-/g, '/')); // Use / for broader compatibility
         cardContent += `
             <img src="${member.foto}" alt="Foto de ${member.nome}" onerror="this.src='https://i.pravatar.cc/300?u=${member.id}'">
             <div class="name">${member.nome}</div>
-            <div class="birthday">${birthDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })} - ${age} anos</div>
+            <div class="birthday">${birthDateForDisplay.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })} - ${age} anos</div>
             <p><strong>Preferências:</strong><br>${member.preferencias || 'Não informado'}</p>
             <p><strong>Quer ganhar:</strong></p>
             <ul>
@@ -386,13 +415,14 @@ const UI = {
         }
 
         const now = new Date();
-        const birthDate = new Date(nextBirthday.data);
-        birthDate.setFullYear(now.getFullYear());
-        if (birthDate < now) {
-            birthDate.setFullYear(now.getFullYear() + 1);
+        const birthDate = new Date(nextBirthday.data.replace(/-/g, '/'));
+        
+        let nextBirthdayDate = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (nextBirthdayDate < now) {
+            nextBirthdayDate.setFullYear(now.getFullYear() + 1);
         }
 
-        const diff = birthDate.getTime() - now.getTime();
+        const diff = nextBirthdayDate.getTime() - now.getTime();
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
