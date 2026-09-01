@@ -1,7 +1,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import { 
-    getFirestore, collection, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimestamp
+    getFirestore, collection, onSnapshot, doc, updateDoc, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 import { 
     getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
@@ -76,11 +76,7 @@ const App = {
         document.getElementById('addMemberBtn').addEventListener('click', () => this.openModal());
         document.getElementById('saveBtn').addEventListener('click', () => this.saveMember());
         document.getElementById('cancelBtn').addEventListener('click', () => UI.closeModal());
-        document.getElementById('deleteBtn').addEventListener('click', () => this.deleteMember());
         document.getElementById('fileUpload').addEventListener('change', e => this.handleFileSelect(e));
-
-        // Notifications
-        document.getElementById('notifyBtn').addEventListener('click', () => this.enableNotifications());
     },
 
     // --- AUTHENTICATION ---
@@ -105,7 +101,6 @@ const App = {
             this.clearData(false); // Clear local data without re-rendering
             snapshot.forEach(doc => {
                 const member = { id: doc.id, ...doc.data() };
-                member.presentes = this.normalizePresentes(member.presentes);
                 if (member.categoria && this.familyData[member.categoria]) {
                     this.familyData[member.categoria].push(member);
                 }
@@ -113,17 +108,7 @@ const App = {
             console.log("Data loaded from Firestore:", this.familyData);
             this.changeTab(this.activeTab || 'netos');
             this.updateCountdown();
-            this.checkUpcomingBirthdaysNotification();
         });
-    },
-
-    // Presentes podem existir no formato antigo (["Item"]) ou novo
-    // ([{item: "Item", comprado: false}]). Isso normaliza para o novo formato.
-    normalizePresentes(presentes) {
-        if (!Array.isArray(presentes)) return [];
-        return presentes.map(p =>
-            typeof p === 'string' ? { item: p, comprado: false } : p
-        );
     },
     
     clearData(render = true) {
@@ -162,27 +147,14 @@ const App = {
                 }
             }
             
-            // Reaproveita o status "comprado" de presentes que já existiam
-            const existingMember = this.isEditing ? this.findMemberById(docId) : null;
-            const novosNomes = document.getElementById('editPresentes').value
-                .split('\n')
-                .map(p => p.trim())
-                .filter(p => p !== '');
-            const presentes = novosNomes.map(nome => {
-                const existente = existingMember?.presentes?.find(
-                    p => p.item.toLowerCase() === nome.toLowerCase()
-                );
-                return { item: nome, comprado: existente ? existente.comprado : false };
-            });
-
             // Prepare data
             const memberData = {
                 nome: document.getElementById('editNome').value,
                 data: document.getElementById('editData').value,
-                categoria: categoria,
+                categoria: document.getElementById('editCategoria').value,
                 foto: imageUrl,
                 preferencias: document.getElementById('editPreferencias').value,
-                presentes: presentes,
+                presentes: document.getElementById('editPresentes').value.split('\n').filter(p => p.trim() !== ''),
             };
 
             if (this.isEditing && docId) {
@@ -211,129 +183,6 @@ const App = {
                 document.getElementById('imagePreview').src = e.target.result;
             }
             reader.readAsDataURL(this.newImageFile);
-        }
-    },
-
-    findMemberById(id) {
-        return Object.values(this.familyData).flat().find(m => m.id === id) || null;
-    },
-
-    async deleteMember() {
-        const docId = document.getElementById('editDocId').value;
-        if (!docId) return;
-
-        const member = this.findMemberById(docId);
-        const nome = member ? member.nome : 'este membro';
-
-        if (!confirm(`Tem certeza que deseja excluir ${nome}? Essa ação não pode ser desfeita.`)) {
-            return;
-        }
-
-        const deleteBtn = document.getElementById('deleteBtn');
-        UI.setButtonLoading(deleteBtn, true, 'Excluindo...');
-
-        try {
-            // Apaga a foto do Storage, se estiver hospedada lá
-            if (member?.foto && member.foto.includes('firebasestorage')) {
-                try {
-                    await deleteObject(ref(this.storage, member.foto));
-                } catch (error) {
-                    console.warn("Não foi possível apagar a foto antiga:", error);
-                }
-            }
-            await deleteDoc(doc(this.db, 'familia', docId));
-            console.log("Membro excluído com sucesso.");
-            UI.closeModal();
-        } catch (error) {
-            console.error("Erro ao excluir membro:", error);
-            alert('Ocorreu um erro ao excluir. Verifique o console para mais detalhes.');
-        } finally {
-            UI.setButtonLoading(deleteBtn, false, 'Excluir');
-        }
-    },
-
-    async toggleGiftBought(memberId, giftIndex) {
-        const member = this.findMemberById(memberId);
-        if (!member) return;
-
-        const presentes = member.presentes.map((p, i) =>
-            i === giftIndex ? { ...p, comprado: !p.comprado } : p
-        );
-
-        try {
-            await updateDoc(doc(this.db, 'familia', memberId), { presentes });
-        } catch (error) {
-            console.error("Erro ao atualizar presente:", error);
-        }
-    },
-
-    shareOnWhatsApp(member) {
-        const idade = this.calculateAge(member.data);
-        const [, month, day] = member.data.split('-').map(Number);
-        const dataFormatada = new Date(2000, month - 1, day)
-            .toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
-
-        let texto = `🎉 *${member.nome}* faz aniversário em ${dataFormatada} (${idade} anos)!\n\n`;
-        if (member.presentes && member.presentes.length > 0) {
-            texto += `🎁 Lista de presentes:\n`;
-            member.presentes.forEach(p => {
-                texto += `${p.comprado ? '✅' : '⬜'} ${p.item}\n`;
-            });
-        }
-        const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
-        window.open(url, '_blank');
-    },
-
-    // --- NOTIFICATIONS (lembrete no navegador) ---
-    // Funciona apenas enquanto o app está aberto no navegador do usuário.
-    // Para notificação real em segundo plano (push), seria necessário
-    // Firebase Cloud Messaging + uma Cloud Function agendada.
-    enableNotifications() {
-        if (!('Notification' in window)) {
-            alert('Seu navegador não suporta notificações.');
-            return;
-        }
-        Notification.requestPermission().then(permission => {
-            const btn = document.getElementById('notifyBtn');
-            if (permission === 'granted') {
-                btn.textContent = '🔔 Lembretes ativados';
-                btn.disabled = true;
-                new Notification('Lembretes ativados!', {
-                    body: 'Você será avisado quando um aniversário estiver chegando.'
-                });
-                this.checkUpcomingBirthdaysNotification();
-            } else {
-                alert('Permissão de notificação negada.');
-            }
-        });
-    },
-
-    checkUpcomingBirthdaysNotification() {
-        if (!('Notification' in window) || Notification.permission !== 'granted') return;
-
-        const today = new Date();
-        const todayKey = today.toISOString().slice(0, 10);
-        // Evita notificar mais de uma vez no mesmo dia
-        if (localStorage.getItem('lastBirthdayNotifyDate') === todayKey) return;
-
-        const DIAS_DE_ANTECEDENCIA = 3;
-        const allMembers = Object.values(this.familyData).flat();
-        const proximos = allMembers.filter(m => {
-            const [, month, day] = m.data.split('-').map(Number);
-            let next = new Date(today.getFullYear(), month - 1, day);
-            next.setHours(0, 0, 0, 0);
-            const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            if (next < todayMidnight) next.setFullYear(next.getFullYear() + 1);
-            const diffDias = Math.round((next - todayMidnight) / (1000 * 60 * 60 * 24));
-            return diffDias >= 0 && diffDias <= DIAS_DE_ANTECEDENCIA;
-        });
-
-        if (proximos.length > 0) {
-            const nomes = proximos.map(m => m.nome).join(', ');
-            new Notification('Aniversário chegando! 🎂', {
-                body: `${nomes} — não esqueça de se organizar para o presente.`
-            });
-            localStorage.setItem('lastBirthdayNotifyDate', todayKey);
         }
     },
 
@@ -523,35 +372,19 @@ const UI = {
         }
         
         const birthDateForDisplay = new Date(member.data.replace(/-/g, '/')); // Use / for broader compatibility
-        const presentes = member.presentes || [];
         cardContent += `
             <img src="${member.foto}" alt="Foto de ${member.nome}" onerror="this.src='https://i.pravatar.cc/300?u=${member.id}'">
             <div class="name">${member.nome}</div>
             <div class="birthday">${birthDateForDisplay.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })} - ${age} anos</div>
             <p><strong>Preferências:</strong><br>${member.preferencias || 'Não informado'}</p>
             <p><strong>Quer ganhar:</strong></p>
-            <ul class="gift-list">
-                ${presentes.length > 0 ? presentes.map((p, i) => `
-                    <li class="gift-item ${p.comprado ? 'gift-bought' : ''}">
-                        <label>
-                            <input type="checkbox" class="gift-checkbox" data-index="${i}" ${p.comprado ? 'checked' : ''}>
-                            ${p.item}
-                        </label>
-                    </li>`).join('') : '<li>Não informado</li>'}
+            <ul>
+                ${member.presentes && member.presentes.length > 0 ? member.presentes.map(p => `<li>- ${p}</li>`).join('') : '<li>Não informado</li>'}
             </ul>
-            <div class="card-actions">
-                <button class="edit-btn btn">Editar</button>
-                <button class="share-btn btn">📤 WhatsApp</button>
-            </div>
+            <button class="edit-btn btn">Editar</button>
         `;
         card.innerHTML = cardContent;
         card.querySelector('.edit-btn').addEventListener('click', () => App.openModal(member));
-        card.querySelector('.share-btn').addEventListener('click', () => App.shareOnWhatsApp(member));
-        card.querySelectorAll('.gift-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                App.toggleGiftBought(member.id, parseInt(checkbox.dataset.index, 10));
-            });
-        });
         return card;
     },
 
@@ -607,8 +440,6 @@ const UI = {
         document.getElementById('imagePreview').src = '';
         document.getElementById('editDocId').value = '';
 
-        const deleteBtn = document.getElementById('deleteBtn');
-
         if (member) { // Editing
             title.innerText = `Editar ${member.nome}`;
             document.getElementById('editDocId').value = member.id;
@@ -617,15 +448,20 @@ const UI = {
             document.getElementById('editCategoria').value = member.categoria;
             document.getElementById('imagePreview').src = member.foto;
             document.getElementById('editPreferencias').value = member.preferencias || '';
-            document.getElementById('editPresentes').value = member.presentes
-                ? member.presentes.map(p => p.item).join('\n')
-                : '';
-            deleteBtn.style.display = 'inline-block';
+            document.getElementById('editPresentes').value = member.presentes ? member.presentes.join('\n') : '';
         } else { // Adding
             title.innerText = 'Adicionar Novo Membro';
             document.getElementById('imagePreview').src = 'https://i.pravatar.cc/300';
-            deleteBtn.style.display = 'none';
+             // Show all fields for new member
+            document.getElementById('editNome').style.display = 'block';
+            document.getElementById('editData').style.display = 'block';
+            document.getElementById('editCategoria').style.display = 'block';
         }
+        
+        // Hide fields that are not editable
+        document.getElementById('editNome').style.display = App.isEditing ? 'none' : 'block';
+        document.getElementById('editData').style.display = App.isEditing ? 'none' : 'block';
+        document.getElementById('editCategoria').style.display = App.isEditing ? 'none' : 'block';
 
         modal.style.display = 'block';
     },

@@ -273,49 +273,6 @@
       text-align: left;
     }
 
-    /* Gift Checklist */
-    .gift-item {
-        padding: 4px 0;
-        transition: opacity 0.2s ease;
-    }
-    .gift-item label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-    }
-    .gift-item input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: var(--secondary-color);
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-    .gift-item.gift-bought {
-        opacity: 0.5;
-    }
-    .gift-item.gift-bought label {
-        text-decoration: line-through;
-    }
-
-    /* Card Actions */
-    .card-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-    .card-actions .btn {
-        flex: 1;
-        padding: 10px 12px;
-        font-size: 0.9em;
-    }
-    .share-btn {
-        background-color: #25D366;
-    }
-    .share-btn:hover {
-        background-color: #1ebd5a;
-    }
-
     /* Birthday Highlight */
     .birthday-highlight {
       border: 3px solid var(--gold-color);
@@ -408,9 +365,7 @@
     }
     .modal-buttons {
       margin-top: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
+      text-align: right;
     }
     .modal-buttons button {
       padding: 10px 20px;
@@ -426,16 +381,6 @@
       background-color: #6c757d;
       color: var(--font-color);
       margin-left: 10px;
-    }
-    .delete-btn {
-      background-color: transparent;
-      color: var(--secondary-color);
-      border: 1px solid var(--secondary-color);
-      margin-right: auto;
-    }
-    .delete-btn:hover {
-      background-color: var(--secondary-color);
-      color: var(--font-color);
     }
 
     /* Skeleton Loading */
